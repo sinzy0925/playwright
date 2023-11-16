@@ -1,10 +1,14 @@
 # playwright
 
+このファイルは、README.mdです。
+https://github.com/sinzy0925/playwright
+に必要なものは、全て置いてあります。
+
 nodejsとplaywrightを使って
 JASRACのWEBサイトから、スクレイピング（プログラムでWEBの情報を取得すること）で、
 作品コード、作品タイトル、アーティスト名、作詞者、作曲者
 を文字列として取得する方法について説明します。
-興味のある人向けに作りましたが、如何せん説明が下手なので、伝わるかどうか？はてなです。
+興味のある人向けに作りましたが、如何せん説明が下手なので、伝わるかどうか、はてな？？です。
 これが、理解できて自分で違うWEBサイトから何か情報を取得したくなったら、あなたもプログラマーの仲間入りです。
 （ほとんどの人にとっては、必要ない操作だと思います。
 　stand.fmという音声配信アプリで必要になる作業を自動化するツールの解説です。）
@@ -14,7 +18,7 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 
 【事前準備】
 1 nodejsのインストール
-　https://nodejs.org/en
+　https://nodejs.org/en　←ここへアクセスします。
 　画面の左側のLTSをクリックして、ダウンロードしてインストールしましょう。
 　インストールは、Next押していけば、なんとなくＯＫ！
 　01nodejs_install.bat　をダブルクリックしても上記サイトに行けます。
@@ -25,7 +29,7 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 　その画面で、cd %USERPROFILE%　と入力し、enterする。
 　今、表示されているのが、あなたのユーザープロファイルです。
 　私の場合は、　C:\Users\yoshinagashinji　です。
-　人によって                           yoshinagashinji　が、違うはずです。
+　人によって             yoshinagashinji　が、違うはずです。
 
 3 https://github.com/sinzy0925/playwright にアクセスして、playwright-main.zipをダウンロードする。
 　https://github.com/sinzy0925/playwright 画面の中央より少し右あたりに
@@ -47,36 +51,61 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 　（同じことをやってます。）
 
 
+
+
+前回分かりにくかったと思う、点の復習。
+https://github.com/sinzy0925/playwright 
+にアクセスして、playwright-main.zipをダウンロードする。
+ダウンロードしたplaywright-main.zipをダブルクリックして、
+自分のユーザープロファイルへコピーする方法。
+playwright-main.zipをダブルクリックし、出てきたフォルダを
+更にダブルクリックします。
+その中にある、
+
+
+
 【アプリの作り方】
 5 サンプルアプリを見てみよう
 　C:\Users\yoshinagashinji\playwright-mainを開きます。
 　
-　sample_playwright.jsとsample_playwright1.jsがありますが同じものです。
-　sample_playwright1.js　をダブルクリックすると、メモ帳が開きます。
+　sample_playwright.jsと
+　sample_playwright1.jsがありますが同じものです。
+　sample_playwright1.jsをダブルクリックすると、メモ帳が開きます。
 　//プログラムを書いていく場所　スタート
 　//プログラムを書いていく場所　エンド
 　の間を確認しましょう。
 
-　console.log('goto url gooleのサイトへ行く');
-　は、プログラムが動いてる事を自分に知らせるために、実行ログを出力してます。
-　黒い画面に表示されます。
+//プログラムを書いていく場所　スタート
 
-　await page.goto('https://www.google.co.jp/');
-　は、Googleサイトへ行く命令です。　画面を見ていれば、分かります。
+  //timeout1を3000ミリ秒(3秒)に設定する。
+  //この後この変数を使いまわす。
+  let timeout1 = 3000;
 
-　await page.waitForTimeout(1000);
-　は、1000ミリ秒＝１秒待つという意味です。
+  //状況を把握するために黒い画面にログを出力します。　
+  //ログ内容：goto url gooleのサイトへ行く
+  console.log('goto url gooleのサイトへ行く'); 
+  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+  await page.goto('https://www.google.co.jp/');//Googleのサイトへ行きます
 
-　await page.getByRole('combobox', { name: '検索' }).fill('google');
-　は、検索ボックスにgoogleと入力せよという意味です。
-　google以外に書き換えれば、その文字列で検索しますよ。
+  console.log('検索ボックスへgoogleと入力');//ログ内容：検索ボックスへgoogleと入力
+  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+  await page.getByRole('combobox', { name: '検索' }).fill('google');
+  //検索ボックスに、googleと入力する
 
-　await page.getByRole('combobox', { name: '検索' }).press('Enter');
-　は、Enterキーを押せという意味です。
+  console.log('エンターキーを押す');//ログ内容：エンターキーを押す
+  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+  await page.getByRole('combobox', { name: '検索' }).press('Enter');
+  //Enterキーを押す
 
-　await page.screenshot({ path: 'screenshot.png', fullPage: true });
-　は、今ブラウザに表示されている画面のスクリーンショットを撮って、screenshot.pngで出力せよという意味です。
-　, fullPage: true は見ての通り、フルページでスクショを撮るという意味です。
+  console.log('スクリーンショットを撮る'); //ログ内容：スクリーンショットを撮る
+  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+  await page.screenshot({ path: 'screenshot.png', fullPage: true });
+  //スクリーンショットをフルページで撮る。
+
+  console.log('ブラウザを閉じる');//ログ内容：ブラウザを閉じる
+  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+
+//プログラムを書いていく場所　エンド
 
 
 　//プログラムを書いていく場所　スタート
@@ -104,17 +133,19 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 　録音して再生する見たいな感じです。
 
 7 webサイトでの操作方法を知る
-　上記４で立ち上がった、ブラウザの検索窓に、以下のJASRACのURLを貼り付けて、Enterを押します。
+　上記４で立ち上がった、ブラウザの検索窓に、以下のJASRACのURLを貼り付けて、
+　Enterを押します。
 　https://www2.jasrac.or.jp/eJwid/
 　
 　画面の一番下の、上記の内容に了承して検索に進むをクリックする。
 
-　検索画面が表示されるので、以下の文字を「作品コード（完全一致）」に貼り付け、Enterを押します。
+　検索画面が表示されるので、以下の文字を「作品コード（完全一致）」に貼り付け、
+　Enterを押します。
 　002-3537-7
 
 　新しいタブができて、そちらに検索結果が表示されます。
 
-　この画面に表示されているのは、画面の上から、作品コード、作品タイトル、下の方にアーティスト名だけです。
+　この画面に表示されているのは、作品コード、作品タイトル、下の方にアーティスト名だけです。
 
 　作詞者、作曲者が表示されてませんので、管理状況(利用分野)の所に「配信」があるので、
 　「〇」であることを確認して、クリックします。
@@ -149,8 +180,8 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 　　動画で見てね
 
 8 webサイトのデータを取得する。
-　上記５で、欲しい情報（作品コード、作品タイトル、アーティスト名、作詞者、作曲者）は画面に全て表示されました。
-　この画面で、情報を取りに行きます。
+　上記５で、欲しい情報（作品コード、作品タイトル、アーティスト名、作詞者、作曲者）は、
+　画面に全て表示されました。この画面で、情報を取りに行きます。
 　取りたい情報がある場所のxpathを調べて、そのxpathのデータを取得します。
 　文字で説明が難しいので、動画で見てね
 

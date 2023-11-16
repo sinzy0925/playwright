@@ -9,4 +9,7 @@ dir %~dp0
 rem xcopy . %USERPROFILE%\playwright-main\
 xcopy . %USERPROFILE%\playwright-main\ /y
 
+rem cd %USERPROFILE%\playwright-main
+cd %USERPROFILE%\playwright-main
+
 cmd /k

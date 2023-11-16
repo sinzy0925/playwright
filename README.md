@@ -53,16 +53,17 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 
 
 
-前回分かりにくかったと思う、点の復習。
-https://github.com/sinzy0925/playwright 
-にアクセスして、playwright-main.zipをダウンロードする。
-ダウンロードしたplaywright-main.zipをダブルクリックして、
-自分のユーザープロファイルへコピーする方法。
-playwright-main.zipをダブルクリックし、出てきたフォルダを
-更にダブルクリックします。
+※前回分かりにくかったと思う、点の復習。
+https://github.com/sinzy0925/playwright にアクセスして、
+playwright-main.zipをダウンロードする。
+ダウンロードしたplaywright-main.zipの中身を自分のユーザープロファイルへコピーする方法。
+
+playwright-main.zipをダブルクリックし、出てきたフォルダをコピーします。
+ダウンロードフォルダへ戻り、貼り付けします。すると、ダウンロードフォルダに
+playwright-main.zip　と、　playwright-mainフォルダがある状態になります。
+
 その中にある、xcopy_playwrght.batダブルクリックすると、
-C:\Users\yoshinagashinji\playwright-mainにフォルダが
-コピーされます。
+C:\Users\yoshinagashinji\playwright-mainにデータがコピーされます。
 　　　　　yoshinagashinjiは人によって違います。
 
 エクスプローラーの検索窓の左の箱に　%USERPROFILE%　を入れて、Enterを押してください。
@@ -74,6 +75,7 @@ C:\Users\yoshinagashinji\playwright-mainにフォルダが
 【アプリの作り方】
 5 サンプルアプリを見てみよう
 　C:\Users\yoshinagashinji\playwright-mainを開きます。
+　　　　　　yoshinagashinjiは人によって違います。
 　
 　sample_playwright.jsと
 　sample_playwright1.jsがありますが同じものです。
@@ -96,31 +98,37 @@ C:\Users\yoshinagashinji\playwright-mainにフォルダが
   let timeout1 = 3000;
 
   //状況を把握するために黒い画面にログを出力します。　
-  //ログ内容：goto url gooleのサイトへ行く
-  console.log('goto url gooleのサイトへ行く'); 
+  //ログ内容：①https://www.google.co.jp/へ行く
+  console.log('①https://www.google.co.jp/へ行く'); 
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.goto('https://www.google.co.jp/');//Googleのサイトへ行きます
   //①https://www.google.co.jp/へ行く
 
-  console.log('検索ボックスへgoogleと入力');//ログ内容：検索ボックスへgoogleと入力
+  console.log('②検索窓に、googleと入れる');//ログ内容：②検索窓に、googleと入れる
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).fill('google');
   //②検索窓に、googleと入れる
 
-  console.log('エンターキーを押す');//ログ内容：エンターキーを押す
+  console.log('③Enterキーを押す');//ログ内容：③Enterキーを押す
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).press('Enter');
   //③Enterキーを押す
 
-  console.log('スクリーンショットを撮る'); //ログ内容：スクリーンショットを撮る
+  console.log('④スクリーンショットを撮る'); //ログ内容：④スクリーンショットを撮る
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.screenshot({ path: 'screenshot.png', fullPage: true });
   //④スクリーンショットを撮る。フルページで。
 
-  console.log('ブラウザを閉じる。プログラム終わり');//ログ内容：ブラウザを閉じる
+  console.log('⑤ブラウザを閉じる。プログラム終わり');//ログ内容：⑤ブラウザを閉じる。プログラム終わり
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
 
+
 //プログラムを書いていく場所　エンド
+
+こんな流れで、プログラムが動くと理解して、動作を確認しましょう。
+05start_sample_playwrght1.bat　をダブルクリックして、
+どのように動くか、実際に確認しましょう。
+
 
 
 　//プログラムを書いていく場所　スタート
@@ -140,8 +148,8 @@ C:\Users\yoshinagashinji\playwright-mainにフォルダが
 　//プログラムを書いていく場所　エンド
 
 
-6 webサイトにアクセスする方法を知る
-　npx playwright codegen
+6 操作記録ができるブラウザで、webサイトにアクセスする方法を調べる方法を知る。
+　npx playwright codegen　を黒い画面で実行するか、
 　06npx_playwright_codegen.bat をダブルクリックすれば、ブラウザが起動します。
 　少し時間がかかります。
 　このブラウザで操作した内容は、ほとんどプログラムコードとして、出力されます。

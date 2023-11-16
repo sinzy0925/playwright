@@ -36,28 +36,28 @@ const { chromium } = require('playwright');//Chromiumというブラウザを使
   let timeout1 = 3000;
 
   //状況を把握するために黒い画面にログを出力します。　
-  //ログ内容：goto url gooleのサイトへ行く
+  //ログ内容：①https://www.google.co.jp/へ行く
   console.log('①https://www.google.co.jp/へ行く'); 
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.goto('https://www.google.co.jp/');//Googleのサイトへ行きます
   //①https://www.google.co.jp/へ行く
 
-  console.log('②検索窓に、googleと入れる');//ログ内容：検索ボックスへgoogleと入力
+  console.log('②検索窓に、googleと入れる');//ログ内容：③検索窓に、googleと入れる
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).fill('google');
   //②検索窓に、googleと入れる
 
-  console.log('③Enterキーを押す');//ログ内容：エンターキーを押す
+  console.log('③Enterキーを押す');//ログ内容：③Enterキーを押す
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).press('Enter');
   //③Enterキーを押す
 
-  console.log('④スクリーンショットを撮る'); //ログ内容：スクリーンショットを撮る
+  console.log('④スクリーンショットを撮る'); //ログ内容：④スクリーンショットを撮る
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.screenshot({ path: 'screenshot.png', fullPage: true });
   //④スクリーンショットを撮る。フルページで。
 
-  console.log('⑤ブラウザを閉じる。プログラム終わり');//ログ内容：ブラウザを閉じる
+  console.log('⑤ブラウザを閉じる。プログラム終わり');//ログ内容：⑤ブラウザを閉じる。プログラム終わり
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
 
 //プログラムを書いていく場所　エンド

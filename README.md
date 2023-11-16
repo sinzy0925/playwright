@@ -60,7 +60,14 @@ https://github.com/sinzy0925/playwright
 自分のユーザープロファイルへコピーする方法。
 playwright-main.zipをダブルクリックし、出てきたフォルダを
 更にダブルクリックします。
-その中にある、
+その中にある、xcopy_playwrght.batダブルクリックすると、
+C:\Users\yoshinagashinji\playwright-mainにフォルダが
+コピーされます。
+　　　　　yoshinagashinjiは人によって違います。
+
+エクスプローラーの検索窓の左の箱に　%USERPROFILE%　を入れて、Enterを押してください。
+そこが、あなたのユーザープロファイルです。そこに、playwright-mainフォルダがありまので、
+ダブルクリックして、開いてください。
 
 
 
@@ -75,6 +82,13 @@ playwright-main.zipをダブルクリックし、出てきたフォルダを
 　//プログラムを書いていく場所　エンド
 　の間を確認しましょう。
 
+いろいろ書いてますが、ブラウザにさせることは、以下の５つです。
+①https://www.google.co.jp/へ行く
+②検索窓に、googleと入れる
+③Enterキーを押す
+④スクリーンショットを撮る
+⑤ブラウザを閉じる
+
 //プログラムを書いていく場所　スタート
 
   //timeout1を3000ミリ秒(3秒)に設定する。
@@ -86,23 +100,24 @@ playwright-main.zipをダブルクリックし、出てきたフォルダを
   console.log('goto url gooleのサイトへ行く'); 
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.goto('https://www.google.co.jp/');//Googleのサイトへ行きます
+  //①https://www.google.co.jp/へ行く
 
   console.log('検索ボックスへgoogleと入力');//ログ内容：検索ボックスへgoogleと入力
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).fill('google');
-  //検索ボックスに、googleと入力する
+  //②検索窓に、googleと入れる
 
   console.log('エンターキーを押す');//ログ内容：エンターキーを押す
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.getByRole('combobox', { name: '検索' }).press('Enter');
-  //Enterキーを押す
+  //③Enterキーを押す
 
   console.log('スクリーンショットを撮る'); //ログ内容：スクリーンショットを撮る
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
   await page.screenshot({ path: 'screenshot.png', fullPage: true });
-  //スクリーンショットをフルページで撮る。
+  //④スクリーンショットを撮る。フルページで。
 
-  console.log('ブラウザを閉じる');//ログ内容：ブラウザを閉じる
+  console.log('ブラウザを閉じる。プログラム終わり');//ログ内容：ブラウザを閉じる
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
 
 //プログラムを書いていく場所　エンド

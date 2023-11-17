@@ -53,7 +53,11 @@ JASRACのWEBサイトから、スクレイピング（プログラムでWEBの�
 
 
 
-※前回分かりにくかったと思う、点の復習。
+〇前回分かりにくかったと思う点の復習。
+このファイルは、README.mdです。
+https://github.com/sinzy0925/playwright
+に必要なものは、全て置いてあります。
+
 https://github.com/sinzy0925/playwright にアクセスして、
 playwright-main.zipをダウンロードする。
 ダウンロードしたplaywright-main.zipの中身を自分のユーザープロファイルへコピーする方法。

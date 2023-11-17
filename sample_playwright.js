@@ -13,8 +13,8 @@ const { chromium } = require('playwright');//Chromiumというブラウザを使
   const timeout  = 30000;                    //timeoutを30000ミリ秒に設定する
   page.setDefaultTimeout(timeout);   //デフォルトタイムアウトを30000ミリ秒に設定する。
   await page.setViewportSize({
-    width:  750,
-    height: 550,
+    width:  900,
+    height: 500,
   });//ブラウザの大きさを設定する。
 
 //ここまでは、とりあえず書いておくので、説明しません。
@@ -38,7 +38,7 @@ const { chromium } = require('playwright');//Chromiumというブラウザを使
   //状況を把握するために黒い画面にログを出力します。　
   //ログ内容：①https://www.google.co.jp/へ行く
   console.log('①https://www.google.co.jp/へ行く'); 
-  await page.waitForTimeout(timeout1);//timeout1の時間待つ
+  await page.waitForTimeout(6000);//6秒待つ
   await page.goto('https://www.google.co.jp/');//Googleのサイトへ行きます
   //①https://www.google.co.jp/へ行く
 
@@ -57,7 +57,8 @@ const { chromium } = require('playwright');//Chromiumというブラウザを使
   await page.screenshot({ path: 'screenshot.png', fullPage: true });
   //④スクリーンショットを撮る。フルページで。
 
-  console.log('⑤ブラウザを閉じる。プログラム終わり');//ログ内容：⑤ブラウザを閉じる。プログラム終わり
+  console.log('⑤ブラウザを閉じる。プログラム終わり');
+  //ログ内容：⑤ブラウザを閉じる。プログラム終わり
   await page.waitForTimeout(timeout1);//timeout1の時間待つ
 
 //プログラムを書いていく場所　エンド

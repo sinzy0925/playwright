@@ -1,4 +1,5 @@
 // 左に//を付けるとコメント行になります。プログラムから無視されます。
+//Bybitのビットコインオプションのデータを取得するアプリ
 //npx playwright codegen
 
 const { chromium } = require('playwright');//Chromiumというブラウザを使う

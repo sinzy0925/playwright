@@ -9,6 +9,9 @@
 const { firefox } = require('playwright');
 
 (async () => {
+  //ヘッダー
+  console.log("OP,BTC-YMD-$,YMD,Genshisan,IV%,Sell,S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time");
+
 //ここに無限ループ
 for(let loop = 0 ; loop < 2 ; loop++){
   loop = 0;
@@ -34,7 +37,6 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
   let res_text = "";
 
-  console.log("OP,BTC-YMD-$,YMD,Genshisan,IV%,Sell,S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time");
 
 
   await page.goto('https://www.bybit.com/trade/option/usdc/BTC');
@@ -138,11 +140,12 @@ for(let loop = 0 ; loop < 2 ; loop++){
     }
     dd = parseInt(dd);
 
-    await page.waitForTimeout(500);
-    await put(page,arrKenrikoushi,dd,mm,yy);
     
     await page.waitForTimeout(500);
     await call(page,arrKenrikoushi,dd,mm,yy);
+
+    await page.waitForTimeout(500);
+    await put(page,arrKenrikoushi,dd,mm,yy);
 
 
     
@@ -157,11 +160,15 @@ for(let loop = 0 ; loop < 2 ; loop++){
 })();
 
 async function call(page,arrKenrikoushi,dd,mm,yy){
+  
   console.error("");
   console.error("Start async function call(page,arrKenrikoushi,dd,mm,yy)");
   console.error("");
 
+
   for(let i = 43 ; i >= 0 ; i--){
+
+
     if(i == 23){
       i = 3;
     }
@@ -222,14 +229,16 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
         }      
         resC += res_text.split('min')[0] + 'min,';     
 
-        console.error(resC);
+        console.warn(resC);
         console.log(resC);
       } catch(e) {
           console.error( 'err : ' + e.message );
       }
     }
 
+
   }//for(let i = 43 ; i >= 0 ; i--){
+
 
 }//async function call(page,arrKenrikoushi,dd,mm,yy){
 
@@ -297,7 +306,7 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
         }    
         resP += res_text.split('min')[0] + 'min,'; 
 
-        console.error(resP);
+        console.warn(resP);
         console.log(resP);
 
 

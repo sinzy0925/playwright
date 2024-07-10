@@ -76,6 +76,10 @@ for(let loop = 0 ; loop < 2 ; loop++){
       await page.waitForTimeout(500);
       genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
     }
+    if(genshi == "0.00"){
+      await page.waitForTimeout(500);
+      genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
+    }
 
     console.error("");
     console.error("dd-mm-yy " + ddmmyy + " genshisan " + genshi);
@@ -137,6 +141,9 @@ for(let loop = 0 ; loop < 2 ; loop++){
     dd = parseInt(dd);
 
     for(let k = 0 ; k <= 5 ; k++){
+
+      console.error("[loop] [call put] [k:0-5] [now k:" + k + "]");
+      
       await page.waitForTimeout(500);
       await call(page,arrKenrikoushi,dd,mm,yy);
   

@@ -47,24 +47,24 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
   let arrDDMMYY = [];
 /*
-  arrDDMMYY[0] = '//*[@id="quote-select-options"]/div[1]/div[2]';
-  arrDDMMYY[1] = '//*[@id="quote-select-options"]/div[1]/div[3]';
-  arrDDMMYY[2] = '//*[@id="quote-select-options"]/div[1]/div[4]';
-  arrDDMMYY[3] = '//*[@id="quote-select-options"]/div[1]/div[5]';
-  arrDDMMYY[4] = '//*[@id="quote-select-options"]/div[1]/div[6]';
+  arrDDMMYY[0] = '26-07-24';
+  arrDDMMYY[1] = '30-08-24';
 */
-  arrDDMMYY[0] = '//*[@id="quote-select-options"]/div[1]/div[6]';
+  arrDDMMYY[0] = '26-07-24';
 
   let arrRes = [];
   for(let j = 0 ; j < arrDDMMYY.length ; j++){  
 
     //日付をクリック
     await page.waitForTimeout(100);
-    await page.locator(arrDDMMYY[j]).click();
+    //await page.getByText(arrDDMMYY[j]).click();
+    await page.locator('._delivery-time_nlm51_18', { hasText: arrDDMMYY[j] }).click();
     await page.waitForTimeout(500);
 
     //日付
-    let ddmmyy = await page.locator(arrDDMMYY[j]).innerText(); 
+    let ddmmyy = arrDDMMYY[j]; 
+    //console.error("ddmmyy " + ddmmyy);
+
     await page.waitForTimeout(500);
 
     //原資産
@@ -77,8 +77,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
     }
     if(genshi == "0.00"){
-      await page.waitForTimeout(500);
-      genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
+	    break;
     }
 
     console.error("");
@@ -142,7 +141,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
     for(let k = 0 ; k <= 5 ; k++){
 
-      console.error("[loop] [call put] [k:0-5] [now k:" + k + "]");
+      console.error("[loop] [call => put] [k:0-5] [now k:" + k + "]");
       
       await page.waitForTimeout(500);
       await call(page,arrKenrikoushi,dd,mm,yy);
@@ -165,7 +164,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 async function call(page,arrKenrikoushi,dd,mm,yy){
 
-  for(let i = 18 ; i >= 10 ; i--){
+  for(let i = 10 ; i <= 18 ; i++){
     let BTC_C = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
 
     //コール側をクリックできるか確認
@@ -173,7 +172,7 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
 
     if(test1 != null){
       try{
-        if(i == 18){
+        if(i == 10){
           console.error("");
           console.error("Start async function call(page,arrKenrikoushi,dd,mm,yy)");
           console.error("");        
@@ -186,7 +185,7 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
 
       
         for(let j = 0 ; j <= 1 ; j++){
-          console.error("C-" + BTC_C + " i 18-10 now : " + i + " j = " + j);
+          console.error("C-" + BTC_C + " [i:10-18] [now i:" + i + "] j:" + j);
 
           let resC = "OP,";
           
@@ -253,8 +252,8 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
 }//async function call(page,arrKenrikoushi,dd,mm,yy){
 
 async function put(page,arrKenrikoushi,dd,mm,yy){
-////////////8
-  for(let i = 8 ; i >= 0 ; i--){  
+///////////////////////8
+  for(let i = 0 ; i <= 8 ; i++){  
     let BTC_P = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
 
     //プット側をクリックできるか確認
@@ -262,7 +261,7 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
 
     if(test1 != null){
       try{
-        if(i == 8){
+        if(i == 0){
           console.error("");
           console.error("Start async function put(page,arrKenrikoushi,dd,mm,yy)");
           console.error("");  
@@ -275,7 +274,8 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
 
 
         for(let j = 0 ; j <= 1 ; j++){
-          console.error("P-" + BTC_P + " i 8-0 now : " + i + " j = " + j);
+          console.error("P-" + BTC_P + " [i:0-8] [now i:" + i + "]  j:" + j);
+
 
           let resP = "OP,";
 

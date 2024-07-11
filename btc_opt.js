@@ -3,6 +3,20 @@
 //npx playwright install 
 //エラーが出るので、指示に従う
 
+var express = require("express");
+var app = express();
+var server = app.listen(8080, function(){
+    console.error("Node.js is listening to localhost:" + server.address().port + '../Dropbox/Attachments');
+});
+app.use('../Dropbox/Attachments', express.static(__dirname + '../Dropbox/Attachments'));
+
+const fs = require( 'fs' )
+const PATHP = '../Dropbox/Attachments/indexp.html'
+const PATHC = '../Dropbox/Attachments/indexc.html'
+fs.writeFileSync( PATHP, 'OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time<br>' )
+fs.writeFileSync( PATHC, 'OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time<br>' )
+
+
 //npx playwright codegen
 
 //const { chromium } = require('playwright');//Chromiumというブラウザを使う
@@ -10,7 +24,7 @@ const { firefox } = require('playwright');
 
 (async () => {
   //ヘッダー
-  console.log("OP,BTC-YMD-$,YMD,Genshisan,IV%,Sell,S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time");
+  console.log("OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time");
 
 //ここに無限ループ
 for(let loop = 0 ; loop < 2 ; loop++){
@@ -84,10 +98,12 @@ for(let loop = 0 ; loop < 2 ; loop++){
     console.error("dd-mm-yy " + ddmmyy + " genshisan " + genshi);
 
     //権利行使価格
+    
     let arrKenrikoushi = [];
-    arrKenrikoushi[0] = (parseInt(genshi.split(',')[0]) - 0 )*1000 ;
-    arrKenrikoushi[1] = (parseInt(genshi.split(',')[0]) - 1 )*1000 ;
-    arrKenrikoushi[2] = (parseInt(genshi.split(',')[0]) - 2 )*1000 ;
+    arrKenrikoushi[0] = 53000                   ;//put
+    arrKenrikoushi[1] = arrKenrikoushi[0] -1000 ;
+    arrKenrikoushi[2] = arrKenrikoushi[0] +1000 ;
+    //arrKenrikoushi[0] = (parseInt(genshi.split(',')[0]) - 0 )*1000 ;
     arrKenrikoushi[3] = (parseInt(genshi.split(',')[0]) - 3 )*1000 ;
     arrKenrikoushi[4] = (parseInt(genshi.split(',')[0]) - 4 )*1000 ;
     arrKenrikoushi[5] = (parseInt(genshi.split(',')[0]) - 5 )*1000 ;
@@ -97,9 +113,10 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
     arrKenrikoushi[9] = (parseInt(genshi.split(',')[0]) - 0 )*1000 ;
 
-    arrKenrikoushi[10] = (parseInt(genshi.split(',')[0]) + 0 )*1000 ;
-    arrKenrikoushi[11] = (parseInt(genshi.split(',')[0]) + 1 )*1000 ;
-    arrKenrikoushi[12] = (parseInt(genshi.split(',')[0]) + 2 )*1000 ;
+    arrKenrikoushi[10] = 63000                     ;//call
+    arrKenrikoushi[11] = arrKenrikoushi[10] - 1000 ;
+    arrKenrikoushi[12] = arrKenrikoushi[10] + 1000 ;
+    //arrKenrikoushi[10] = (parseInt(genshi.split(',')[0]) + 0 )*1000 ;
     arrKenrikoushi[13] = (parseInt(genshi.split(',')[0]) + 3 )*1000 ;
     arrKenrikoushi[14] = (parseInt(genshi.split(',')[0]) + 4 )*1000 ;
     arrKenrikoushi[15] = (parseInt(genshi.split(',')[0]) + 5 )*1000 ;
@@ -164,8 +181,9 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 async function call(page,arrKenrikoushi,dd,mm,yy){
 
-  for(let i = 10 ; i <= 18 ; i++){
-    let BTC_C = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
+  for(let i = 10 ; i <= 12 ; i++){
+    let BTC_C     = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
+    let BTC_C_chk = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[10] ;
 
     //コール側をクリックできるか確認
     let test1 = await page.$(BTC_C);
@@ -184,10 +202,10 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
         await page.waitForTimeout(500);
 
       
-        for(let j = 0 ; j <= 1 ; j++){
+        for(let j = 0 ; j <= 0 ; j++){
           console.error("C-" + BTC_C + " [i:10-18] [now i:" + i + "] j:" + j);
 
-          let resC = "OP,";
+          let resC = "OPnew,";
           
           //権利行使価格
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
@@ -198,21 +216,21 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
             timeZone: 'Asia/Tokyo', 
             year: 'numeric', month: '2-digit' ,day: '2-digit',
             hour: '2-digit', minute: '2-digit',second: '2-digit'});
-          resC += ymd + ',';
+          resC += ymd + ',[,';
 
           //原資産
           genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-          resC += genshi.replace(/,/g, '') + ',';
+          resC += genshi.replace(/,/g, '') + ',],';
 
           
           //ボラティリティ
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-          resC += res_text.split('\n')[3] + ','; 
+          resC += res_text.split('\n')[3] + ',[,'; 
 
           //価格
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
 
-          resC += (res_text.split('\n')[17]).replace(/,/g, '') + ',';//売：注文価格
+          resC += (res_text.split('\n')[17]).replace(/,/g, '') + ',],';//売：注文価格
           resC += (res_text.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
           resC += (res_text.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
           //res += (res_text.split('\n')[14] + ',';//↑
@@ -233,9 +251,13 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
 
           console.warn(resC);
           console.log(resC);
-          if(j == 0){
-            await page.waitForTimeout(1000);
-          }        
+          
+          if(BTC_C == BTC_C_chk){
+            fs.appendFileSync( PATHC, resC + '<br>' )
+          }
+
+          await page.waitForTimeout(500);
+     
       
         }//for(let j = 0 ; j <= 1 ; j++){
 
@@ -253,8 +275,9 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
 
 async function put(page,arrKenrikoushi,dd,mm,yy){
 ///////////////////////8
-  for(let i = 0 ; i <= 8 ; i++){  
-    let BTC_P = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
+  for(let i = 0 ; i <= 2 ; i++){  
+    let BTC_P     = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
+    let BTC_P_chk = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[0] ;
 
     //プット側をクリックできるか確認
     let test1 = await page.$(BTC_P);
@@ -273,11 +296,11 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
         await page.waitForTimeout(500);
 
 
-        for(let j = 0 ; j <= 1 ; j++){
+        for(let j = 0 ; j <= 0 ; j++){
           console.error("P-" + BTC_P + " [i:0-8] [now i:" + i + "]  j:" + j);
 
 
-          let resP = "OP,";
+          let resP = "OPnew,";
 
           //権利行使価格
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
@@ -289,20 +312,20 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
             year: 'numeric', month: '2-digit' ,day: '2-digit',
             hour: '2-digit', minute: '2-digit',second: '2-digit'});
 
-          resP += ymd + ',';
+          resP += ymd + ',[,';
 
           //原資産
           genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-          resP += genshi.replace(/,/g, '') + ',';
+          resP += genshi.replace(/,/g, '') + ',],';
 
           //ボラティリティ
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-          resP += res_text.split('\n')[3] + ','; 
+          resP += res_text.split('\n')[3] + ',[,'; 
 
           //価格
           res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
 
-          resP += (res_text.split('\n')[17]).replace(/,/g, '') + ',';//売：注文価格
+          resP += (res_text.split('\n')[17]).replace(/,/g, '') + ',],';//売：注文価格
           resP += (res_text.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
           resP += (res_text.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
           //res += (res_text.split('\n')[14] + ',';//↑
@@ -323,9 +346,14 @@ async function put(page,arrKenrikoushi,dd,mm,yy){
 
           console.warn(resP);
           console.log(resP);
-          if(j == 0){
-            await page.waitForTimeout(1000);
+          
+          if(BTC_P == BTC_P_chk){
+            fs.appendFileSync( PATHP, resP + '<br>' )
           }
+
+          await page.waitForTimeout(500);
+
+          
 
         }
 

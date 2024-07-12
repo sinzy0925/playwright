@@ -1,4 +1,4 @@
-﻿//npx playwright codegen
+//npx playwright codegen 'https://www.bybit.com/trade/option/usdc/BTC'
 // 左に//を付けるとコメント行になります。プログラムから無視されます。
 //google console
 //npx playwright install 
@@ -7,7 +7,7 @@
 var express = require("express");
 var app = express();
 var server = app.listen(8080, function(){
-    console.error("Node.js is listening to localhost:" + server.address().port + '../Dropbox/Attachments');
+    console.error(["Node.js is listening to localhost:" + server.address().port + '../Dropbox/Attachments']);
 });
 app.use('../Dropbox/Attachments', express.static(__dirname + '../Dropbox/Attachments'));
 
@@ -37,7 +37,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
   let timeout  = 30000;                    //timeoutを30000ミリ秒に設定する
   page.setDefaultTimeout(timeout);   //デフォルトタイムアウトを30000ミリ秒に設定する。
   await page.setViewportSize({
-    width:  1200,
+    width:  1300,
     height: 1800,
   });//ブラウザの大きさを設定する。
 
@@ -47,10 +47,11 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 
 
-  console.error("page.goto() Start");
+  console.error(["page.goto() Start"]);
   await page.goto('https://www.bybit.com/trade/option/usdc/BTC');
-  await page.waitForTimeout(5000);
-  console.error("page.goto() End");
+  await page.waitForTimeout(6000);
+  console.error(["page.goto('https://www.bybit.com/trade/option/usdc/BTC');"]);
+  console.error(["page.goto() End"]);
 
 
 
@@ -66,21 +67,19 @@ for(let loop = 0 ; loop < 2 ; loop++){
   arrDDMMYY[1] = '02-08-24';
 
   let arrRes = [];
-  for(let l = 0 ; l < 10 ; l++){
-    console.error("loop l=0-9 l=" + l);
+  for(let l = 0 ; l < 5 ; l++){
+    console.error(["loop","l=0-4", "l=" + l]);
     for(let j = 0 ; j < arrDDMMYY.length ; j++){  
 
       //日付をクリック
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(500);
       //await page.getByText(arrDDMMYY[j]).click();
       await page.locator('._delivery-time_nlm51_18', { hasText: arrDDMMYY[j] }).click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(2000);
 
       //日付
       let ddmmyy = arrDDMMYY[j]; 
       //console.error("ddmmyy " + ddmmyy);
-
-      await page.waitForTimeout(500);
 
       //原資産
       let genshi = "0.00";
@@ -96,7 +95,8 @@ for(let loop = 0 ; loop < 2 ; loop++){
       }
 
       console.error("");
-      console.error("dd-mm-yy " + ddmmyy + " genshisan " + genshi);
+      console.error(["dd-mm-yy:" + ddmmyy , " genshisan:" + genshi]);
+      console.error("");
 
 
 
@@ -133,8 +133,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await page.waitForTimeout(500);
-      await callput(page,dd,mm,yy,j,arrDDMMYY);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l);
     
 
 
@@ -150,7 +149,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l){
 
   let PATH = '';
   let meigara = '';
@@ -179,13 +178,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
 
 
   for(let i = 0 ; i <= 2 ; i++){
+    await page.waitForTimeout(500);
+
     let BTC_C     = dd + mm + yy + '-' + arrKenri_c[i] ;
 
-    meigara = 'C'
-            + arrDDMMYY[j].split('-')[2]  
+    meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_c[i];
+
+    if(i == 0){
+      meigara = '#' + j + 'C' + meigara;
+    }else{
+      meigara =           'C' + meigara;
+    }
 
     PATH = '../Dropbox/Attachments/' 
          + meigara
@@ -197,17 +203,17 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
     if(test1 != null){
       try{
         if(i == 0){
-          console.error("");
-          console.error("Start async function call");
+          console.error(["Start async function call"]);
           console.error("");        
         }
       
-        await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 325,y: 25} });
         await page.waitForTimeout(500);
-        await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
-        await page.waitForTimeout(500);
+        await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 200,y: 15} });
+        await page.waitForTimeout(3000);
+        //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
+        //await page.waitForTimeout(1000);
   
-        console.error("c-" + BTC_C + " [i:0-2] [now i:" + i + "]");
+        console.error(["c-" + BTC_C , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ]);
 
         
         //権利行使価格
@@ -256,8 +262,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
-        console.warn(PATH);
-        console.error(resC);
+        console.warn([PATH]);
+        console.error([resC]);
 
         await page.waitForTimeout(500);
     
@@ -274,13 +280,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
   
 
   for(let i = 0 ; i <= 2 ; i++){
+    await page.waitForTimeout(500);
+
     let BTC_P     = dd + mm + yy + '-' + arrKenri_p[i] ;
     
-    meigara = 'P'
-            + arrDDMMYY[j].split('-')[2]  
+    meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_p[i];
+
+    if(i == 0){
+      meigara = '#' + j + 'P' + meigara;
+    }else{
+      meigara =           'P' + meigara;
+    }
 
     PATH = '../Dropbox/Attachments/' 
          + meigara
@@ -292,17 +305,17 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
     if(test1 != null){
       try{
         if(i == 0){
-          console.error("");
-          console.error("Start async function put");
+          console.error(["Start async function put"]);
           console.error("");        
         }
       
-        await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 925,y: 25} });
         await page.waitForTimeout(500);
-        await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
-        await page.waitForTimeout(500);
+        await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 600,y: 15} });
+        await page.waitForTimeout(3000);
+        //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
+        //await page.waitForTimeout(1000);
   
-        console.error("p-" + BTC_P + " [i:0-2] [now i:" + i + "]");
+        console.error(["p-" + BTC_P , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ]);
 
         
         //権利行使価格
@@ -351,8 +364,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH, resC );
-        console.warn(PATH);
-        console.error(resC);
+        console.warn([PATH]);
+        console.error([resC]);
 
         await page.waitForTimeout(500);
     

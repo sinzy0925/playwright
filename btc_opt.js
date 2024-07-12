@@ -1,3 +1,4 @@
+﻿//npx playwright codegen
 // 左に//を付けるとコメント行になります。プログラムから無視されます。
 //google console
 //npx playwright install 
@@ -11,20 +12,13 @@ var server = app.listen(8080, function(){
 app.use('../Dropbox/Attachments', express.static(__dirname + '../Dropbox/Attachments'));
 
 const fs = require( 'fs' )
-const PATHP = '../Dropbox/Attachments/indexp.html'
-const PATHC = '../Dropbox/Attachments/indexc.html'
-fs.writeFileSync( PATHP, 'OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time<br>' )
-fs.writeFileSync( PATHC, 'OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time<br>' )
 
-
-//npx playwright codegen
 
 //const { chromium } = require('playwright');//Chromiumというブラウザを使う
 const { firefox } = require('playwright');
 
 (async () => {
   //ヘッダー
-  console.log("OPnew,BTC-YMD-$,YMD,[,Genshisan,],IV%,[,Sell,],S-Cnt,S-Cnt2,Mark,Buy,B-Cnt,B-Cnt2,Time");
 
 //ここに無限ループ
 for(let loop = 0 ; loop < 2 ; loop++){
@@ -53,8 +47,12 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 
 
+  console.error("page.goto() Start");
   await page.goto('https://www.bybit.com/trade/option/usdc/BTC');
   await page.waitForTimeout(5000);
+  console.error("page.goto() End");
+
+
 
   timeout  = 20000;                    //timeoutを30000ミリ秒に設定する
   page.setDefaultTimeout(timeout);  
@@ -62,114 +60,87 @@ for(let loop = 0 ; loop < 2 ; loop++){
   let arrDDMMYY = [];
 /*
   arrDDMMYY[0] = '26-07-24';
-  arrDDMMYY[1] = '30-08-24';
+  arrDDMMYY[1] = '02-08-24';
 */
   arrDDMMYY[0] = '26-07-24';
+  arrDDMMYY[1] = '02-08-24';
 
   let arrRes = [];
-  for(let j = 0 ; j < arrDDMMYY.length ; j++){  
+  for(let l = 0 ; l < 10 ; l++){
+    console.error("loop l=0-9 l=" + l);
+    for(let j = 0 ; j < arrDDMMYY.length ; j++){  
 
-    //日付をクリック
-    await page.waitForTimeout(100);
-    //await page.getByText(arrDDMMYY[j]).click();
-    await page.locator('._delivery-time_nlm51_18', { hasText: arrDDMMYY[j] }).click();
-    await page.waitForTimeout(500);
-
-    //日付
-    let ddmmyy = arrDDMMYY[j]; 
-    //console.error("ddmmyy " + ddmmyy);
-
-    await page.waitForTimeout(500);
-
-    //原資産
-    let genshi = "0.00";
-    genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-
-    if(genshi == "0.00"){
-      console.error("genshi err");
+      //日付をクリック
+      await page.waitForTimeout(100);
+      //await page.getByText(arrDDMMYY[j]).click();
+      await page.locator('._delivery-time_nlm51_18', { hasText: arrDDMMYY[j] }).click();
       await page.waitForTimeout(500);
+
+      //日付
+      let ddmmyy = arrDDMMYY[j]; 
+      //console.error("ddmmyy " + ddmmyy);
+
+      await page.waitForTimeout(500);
+
+      //原資産
+      let genshi = "0.00";
       genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-    }
-    if(genshi == "0.00"){
-	    break;
-    }
 
-    console.error("");
-    console.error("dd-mm-yy " + ddmmyy + " genshisan " + genshi);
+      if(genshi == "0.00"){
+        console.error("genshi err");
+        await page.waitForTimeout(500);
+        genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
+      }
+      if(genshi == "0.00"){
+        break;
+      }
 
-    //権利行使価格
+      console.error("");
+      console.error("dd-mm-yy " + ddmmyy + " genshisan " + genshi);
+
+
+
+      let dd = ddmmyy.split('-')[0]; 
+      let mm = ddmmyy.split('-')[1]; 
+      let yy = ddmmyy.split('-')[2];
+      if(      mm == '01'){
+        mm = 'JAN';
+      }else if(mm == '02'){
+        mm = 'FEB';
+      }else if(mm == '03'){
+        mm = 'MAR';
+      }else if(mm == '04'){
+        mm = 'APR';
+      }else if(mm == '05'){
+        mm = 'MAY';
+      }else if(mm == '06'){
+        mm = 'JUN';
+      }else if(mm == '07'){
+        mm = 'JUL';
+      }else if(mm == '08'){
+        mm = 'AUG';
+      }else if(mm == '09'){
+        mm = 'SEP';
+      }else if(mm == '10'){
+        mm = 'OCT';
+      }else if(mm == '11'){
+        mm = 'NOV';
+      }else if(mm == '12'){
+        mm = 'DEC';
+      }else{
+        mm = 'err'
+      }
+      dd = parseInt(dd);
+
+        
+      await page.waitForTimeout(500);
+      await callput(page,dd,mm,yy,j,arrDDMMYY);
     
-    let arrKenrikoushi = [];
-    arrKenrikoushi[0] = 53000                   ;//put
-    arrKenrikoushi[1] = arrKenrikoushi[0] -1000 ;
-    arrKenrikoushi[2] = arrKenrikoushi[0] +1000 ;
-    //arrKenrikoushi[0] = (parseInt(genshi.split(',')[0]) - 0 )*1000 ;
-    arrKenrikoushi[3] = (parseInt(genshi.split(',')[0]) - 3 )*1000 ;
-    arrKenrikoushi[4] = (parseInt(genshi.split(',')[0]) - 4 )*1000 ;
-    arrKenrikoushi[5] = (parseInt(genshi.split(',')[0]) - 5 )*1000 ;
-    arrKenrikoushi[6] = (parseInt(genshi.split(',')[0]) - 6 )*1000 ;
-    arrKenrikoushi[7] = (parseInt(genshi.split(',')[0]) - 7 )*1000 ;
-    arrKenrikoushi[8] = (parseInt(genshi.split(',')[0]) - 8 )*1000 ;
 
-    arrKenrikoushi[9] = (parseInt(genshi.split(',')[0]) - 0 )*1000 ;
 
-    arrKenrikoushi[10] = 63000                     ;//call
-    arrKenrikoushi[11] = arrKenrikoushi[10] - 1000 ;
-    arrKenrikoushi[12] = arrKenrikoushi[10] + 1000 ;
-    //arrKenrikoushi[10] = (parseInt(genshi.split(',')[0]) + 0 )*1000 ;
-    arrKenrikoushi[13] = (parseInt(genshi.split(',')[0]) + 3 )*1000 ;
-    arrKenrikoushi[14] = (parseInt(genshi.split(',')[0]) + 4 )*1000 ;
-    arrKenrikoushi[15] = (parseInt(genshi.split(',')[0]) + 5 )*1000 ;
-    arrKenrikoushi[16] = (parseInt(genshi.split(',')[0]) + 6 )*1000 ;
-    arrKenrikoushi[17] = (parseInt(genshi.split(',')[0]) + 7 )*1000 ;
-    arrKenrikoushi[18] = (parseInt(genshi.split(',')[0]) + 8 )*1000 ;
-
-    let dd = ddmmyy.split('-')[0]; 
-    let mm = ddmmyy.split('-')[1]; 
-    let yy = ddmmyy.split('-')[2];
-    if(      mm == '01'){
-      mm = 'JAN';
-    }else if(mm == '02'){
-      mm = 'FEB';
-    }else if(mm == '03'){
-      mm = 'MAR';
-    }else if(mm == '04'){
-      mm = 'APR';
-    }else if(mm == '05'){
-      mm = 'MAY';
-    }else if(mm == '06'){
-      mm = 'JUN';
-    }else if(mm == '07'){
-      mm = 'JUL';
-    }else if(mm == '08'){
-      mm = 'AUG';
-    }else if(mm == '09'){
-      mm = 'SEP';
-    }else if(mm == '10'){
-      mm = 'OCT';
-    }else if(mm == '11'){
-      mm = 'NOV';
-    }else if(mm == '12'){
-      mm = 'DEC';
-    }else{
-      mm = 'err'
-    }
-    dd = parseInt(dd);
-
-    for(let k = 0 ; k <= 5 ; k++){
-
-      console.error("[loop] [call => put] [k:0-5] [now k:" + k + "]");
       
-      await page.waitForTimeout(500);
-      await call(page,arrKenrikoushi,dd,mm,yy);
-  
-      await page.waitForTimeout(500);
-      await put(page,arrKenrikoushi,dd,mm,yy);  
-    }
-
-
-    
-  }//for(let j = 0 ; j < arrDDMMYY.length ; j++){
+    }//for(let j = 0 ; j < arrDDMMYY.length ; j++){
+  }//for(let l = 0 ; l < 10 ; l++){
 
   await page.close();
   await context.close();
@@ -179,87 +150,214 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function call(page,arrKenrikoushi,dd,mm,yy){
+async function callput(page,dd,mm,yy,j,arrDDMMYY){
 
-  for(let i = 10 ; i <= 12 ; i++){
-    let BTC_C     = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
-    let BTC_C_chk = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[10] ;
+  let PATH = '';
+  let meigara = '';
+
+  let kenri_c = 0;//call
+  let kenri_p = 0;//put
+
+  if(j == 0){
+    kenri_c = 63 ;//call
+    kenri_p = 53 ;//put
+  }else{
+    kenri_c = 63 + 1 ;//call
+    kenri_p = 53 - 1 ;//put
+  }
+
+  //権利行使価格
+  let arrKenri_c = [];
+  arrKenri_c[0] = kenri_c           ;//call
+  arrKenri_c[1] = arrKenri_c[0] - 1 ;
+  arrKenri_c[2] = arrKenri_c[0] + 1 ;
+
+  let arrKenri_p = [];
+  arrKenri_p[0] = kenri_p           ;//put
+  arrKenri_p[1] = arrKenri_p[0] - 1 ;
+  arrKenri_p[2] = arrKenri_p[0] + 1 ;
+
+
+  for(let i = 0 ; i <= 2 ; i++){
+    let BTC_C     = dd + mm + yy + '-' + arrKenri_c[i] ;
+
+    meigara = 'C'
+            + arrDDMMYY[j].split('-')[2]  
+            + arrDDMMYY[j].split('-')[1]
+            + arrDDMMYY[j].split('-')[0]
+            + '-' + arrKenri_c[i];
+
+    PATH = '../Dropbox/Attachments/' 
+         + meigara
+         + '.html';
 
     //コール側をクリックできるか確認
-    let test1 = await page.$(BTC_C);
+    let test1 = await page.$('#BTC-' + BTC_C + '000');
 
     if(test1 != null){
       try{
-        if(i == 10){
+        if(i == 0){
           console.error("");
-          console.error("Start async function call(page,arrKenrikoushi,dd,mm,yy)");
+          console.error("Start async function call");
           console.error("");        
         }
       
-        await page.locator(BTC_C + ' canvas').click({ position: {x: 325,y: 25} });
+        await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 325,y: 25} });
         await page.waitForTimeout(500);
-        await page.locator(BTC_C + '-C_checked div').first().click();
+        await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         await page.waitForTimeout(500);
+  
+        console.error("c-" + BTC_C + " [i:0-2] [now i:" + i + "]");
 
+        
+        //権利行使価格
+        let kenri = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
+        
+
+        //ymd
+        ymd = new Date().toLocaleString('ja-JP', {
+          timeZone: 'Asia/Tokyo', 
+          year: 'numeric', month: '2-digit' ,day: '2-digit',
+          hour: '2-digit', minute: '2-digit',second: '2-digit'});
+        
+
+        //原資産
+        let genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
+        genshi  = parseInt(genshi.replace(/,/g, '')) ;
+
+        
+        //ボラティリティ
+        let vola = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
+        vola = vola.split('\n')[3].split('%')[0]; 
+
+        //価格
+        let kakaku = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
+        let sell = parseInt((kakaku.split('\n')[17]).replace(/,/g, '')) ;//売：注文価格
+        //resC += (kakaku.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
+        //resC += (kakaku.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
+        let mark = parseInt((kakaku.split('\n')[16]).replace(/,/g, '')) ;//マーク価格
+        let buy  = parseInt((kakaku.split('\n')[11]).replace(/,/g, '')) ;//買：注文価格 
+        //resC += (kakaku.split('\n')[12]).replace(/,/g, '') + ',';//買：数量
+        //resC += (kakaku.split('\n')[13]).replace(/,/g, '') + ',';//買：合計BTC
+
+
+
+        //残り時間
+        let nokori  = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[11];
+            nokori += (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[12];
+        let nokori1 = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[13];
+        if(nokori1.indexOf('min') > 0){
+          nokori += nokori1;
+        }      
+        nokori = nokori.split('min')[0];     
+
+        let resC = "";
+        resC =  genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola +',' + meigara  +  ',<br>,'
+             + ymd + ',' + nokori + ',<br>\n'; 
+        
+        fs.appendFileSync( PATH , resC );
+        console.warn(PATH);
+        console.error(resC);
+
+        await page.waitForTimeout(500);
+    
+    
       
-        for(let j = 0 ; j <= 0 ; j++){
-          console.error("C-" + BTC_C + " [i:10-18] [now i:" + i + "] j:" + j);
 
-          let resC = "OPnew,";
-          
-          //権利行使価格
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
-          resC += res_text + ','; 
 
-          //ymd
-          ymd = new Date().toLocaleString('ja-JP', {
-            timeZone: 'Asia/Tokyo', 
-            year: 'numeric', month: '2-digit' ,day: '2-digit',
-            hour: '2-digit', minute: '2-digit',second: '2-digit'});
-          resC += ymd + ',[,';
+      } catch(e) {
+          console.error( 'err : ' + e.message );
+      }
+    }
+  }//for(let i = 0 ; i <= 2 ; i++){
 
-          //原資産
-          genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-          resC += genshi.replace(/,/g, '') + ',],';
+  
 
-          
-          //ボラティリティ
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-          resC += res_text.split('\n')[3] + ',[,'; 
+  for(let i = 0 ; i <= 2 ; i++){
+    let BTC_P     = dd + mm + yy + '-' + arrKenri_p[i] ;
+    
+    meigara = 'P'
+            + arrDDMMYY[j].split('-')[2]  
+            + arrDDMMYY[j].split('-')[1]
+            + arrDDMMYY[j].split('-')[0]
+            + '-' + arrKenri_p[i];
 
-          //価格
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
+    PATH = '../Dropbox/Attachments/' 
+         + meigara
+         + '.html';
 
-          resC += (res_text.split('\n')[17]).replace(/,/g, '') + ',],';//売：注文価格
-          resC += (res_text.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
-          resC += (res_text.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
-          //res += (res_text.split('\n')[14] + ',';//↑
-          //res += (res_text.split('\n')[15] + ',';//％
-          resC += (res_text.split('\n')[16]).replace(/,/g, '') + ',';//マーク価格
-          resC += (res_text.split('\n')[11]).replace(/,/g, '') + ',';//買：注文価格 
-          resC += (res_text.split('\n')[12]).replace(/,/g, '') + ',';//買：数量
-          resC += (res_text.split('\n')[13]).replace(/,/g, '') + ',';//買：合計BTC
+    //コール側をクリックできるか確認
+    let test1 = await page.$('#BTC-' + BTC_P + '000');
 
-          //残り時間
-          res_text = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[11];
-          res_text += (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[12];
-          res_txt1 = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[13];
-          if(res_txt1.indexOf('min') > 0){
-            res_text += res_txt1;
-          }      
-          resC += res_text.split('min')[0] + 'min,';     
-
-          console.warn(resC);
-          console.log(resC);
-          
-          if(BTC_C == BTC_C_chk){
-            fs.appendFileSync( PATHC, resC + '<br>' )
-          }
-
-          await page.waitForTimeout(500);
-     
+    if(test1 != null){
+      try{
+        if(i == 0){
+          console.error("");
+          console.error("Start async function put");
+          console.error("");        
+        }
       
-        }//for(let j = 0 ; j <= 1 ; j++){
+        await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 925,y: 25} });
+        await page.waitForTimeout(500);
+        await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
+        await page.waitForTimeout(500);
+  
+        console.error("p-" + BTC_P + " [i:0-2] [now i:" + i + "]");
+
+        
+        //権利行使価格
+        let kenri = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
+        
+
+        //ymd
+        ymd = new Date().toLocaleString('ja-JP', {
+          timeZone: 'Asia/Tokyo', 
+          year: 'numeric', month: '2-digit' ,day: '2-digit',
+          hour: '2-digit', minute: '2-digit',second: '2-digit'});
+        
+
+        //原資産
+        let genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
+        genshi  = parseInt(genshi.replace(/,/g, '')) ;
+
+        
+        //ボラティリティ
+        let vola = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
+        vola = vola.split('\n')[3].split('%')[0]; 
+
+        //価格
+        let kakaku = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
+        let sell = parseInt((kakaku.split('\n')[17]).replace(/,/g, '')) ;//売：注文価格
+        //resC += (kakaku.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
+        //resC += (kakaku.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
+        let mark = parseInt((kakaku.split('\n')[16]).replace(/,/g, '')) ;//マーク価格
+        let buy  = parseInt((kakaku.split('\n')[11]).replace(/,/g, '')) ;//買：注文価格 
+        //resC += (kakaku.split('\n')[12]).replace(/,/g, '') + ',';//買：数量
+        //resC += (kakaku.split('\n')[13]).replace(/,/g, '') + ',';//買：合計BTC
+
+
+
+        //残り時間
+        let nokori  = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[11];
+            nokori += (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[12];
+        let nokori1 = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[13];
+        if(nokori1.indexOf('min') > 0){
+          nokori += nokori1;
+        }      
+        nokori = nokori.split('min')[0] ;     
+
+        let resC = "";
+        resC = genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola + ',' + meigara + ',<br>,'
+             + ymd + ',' + nokori + ',<br>\n'; 
+        
+        fs.appendFileSync( PATH, resC );
+        console.warn(PATH);
+        console.error(resC);
+
+        await page.waitForTimeout(500);
+    
+    
+      
 
 
       } catch(e) {
@@ -268,101 +366,8 @@ async function call(page,arrKenrikoushi,dd,mm,yy){
     }
 
 
-  }//for(let i = 18 ; i >= 10 ; i--){
+  }//for(let i = 0 ; i <= 2 ; i++){
 
 
-}//async function call(page,arrKenrikoushi,dd,mm,yy){
+}//async function callput(page,dd,mm,yy){
 
-async function put(page,arrKenrikoushi,dd,mm,yy){
-///////////////////////8
-  for(let i = 0 ; i <= 2 ; i++){  
-    let BTC_P     = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[i] ;
-    let BTC_P_chk = '#BTC-' + dd + mm + yy + '-' + arrKenrikoushi[0] ;
-
-    //プット側をクリックできるか確認
-    let test1 = await page.$(BTC_P);
-
-    if(test1 != null){
-      try{
-        if(i == 0){
-          console.error("");
-          console.error("Start async function put(page,arrKenrikoushi,dd,mm,yy)");
-          console.error("");  
-        }
-            
-        await page.locator(BTC_P + ' canvas').click({ position: {x: 925,y: 25} });
-        await page.waitForTimeout(500);
-        await page.locator(BTC_P + '-P_checked div').first().click();
-        await page.waitForTimeout(500);
-
-
-        for(let j = 0 ; j <= 0 ; j++){
-          console.error("P-" + BTC_P + " [i:0-8] [now i:" + i + "]  j:" + j);
-
-
-          let resP = "OPnew,";
-
-          //権利行使価格
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[1]/div/div[2]').innerText(); 
-          resP += res_text + ','; 
-
-          //ymd
-          let ymd = new Date().toLocaleString('ja-JP', {
-            timeZone: 'Asia/Tokyo', 
-            year: 'numeric', month: '2-digit' ,day: '2-digit',
-            hour: '2-digit', minute: '2-digit',second: '2-digit'});
-
-          resP += ymd + ',[,';
-
-          //原資産
-          genshi = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[3];
-          resP += genshi.replace(/,/g, '') + ',],';
-
-          //ボラティリティ
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-          resP += res_text.split('\n')[3] + ',[,'; 
-
-          //価格
-          res_text = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
-
-          resP += (res_text.split('\n')[17]).replace(/,/g, '') + ',],';//売：注文価格
-          resP += (res_text.split('\n')[18]).replace(/,/g, '') + ',';//売：数量
-          resP += (res_text.split('\n')[19]).replace(/,/g, '') + ',';//売：合計BTC
-          //res += (res_text.split('\n')[14] + ',';//↑
-          //res += (res_text.split('\n')[15] + ',';//％
-          resP += (res_text.split('\n')[16]).replace(/,/g, '') + ',';//マーク価格
-          resP += (res_text.split('\n')[11]).replace(/,/g, '') + ',';//買：注文価格 
-          resP += (res_text.split('\n')[12]).replace(/,/g, '') + ',';//買：数量
-          resP += (res_text.split('\n')[13]).replace(/,/g, '') + ',';//買：合計BTC
-
-          //残り時間
-          res_text = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[11];
-          res_text += (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[12];
-          let res_txt1 = (await page.locator('//*[@id="quote_list"]').innerText()).split(' ')[13];
-          if(res_txt1.indexOf('min') > 0){
-            res_text += res_txt1;
-          }    
-          resP += res_text.split('min')[0] + 'min,'; 
-
-          console.warn(resP);
-          console.log(resP);
-          
-          if(BTC_P == BTC_P_chk){
-            fs.appendFileSync( PATHP, resP + '<br>' )
-          }
-
-          await page.waitForTimeout(500);
-
-          
-
-        }
-
-
-      } catch(e) {
-        console.error( 'err : ' + e.message );
-      } 
-    }
-
-  }//for
-
-}//async function put(arrKenrikoushi,dd,mm,yy){

@@ -11,7 +11,8 @@ var server = app.listen(8080, function(){
 });
 app.use('../Dropbox/Attachments', express.static(__dirname + '../Dropbox/Attachments'));
 
-const fs = require( 'fs' )
+const fs = require( 'fs' );
+let cnt = -1;
 
 
 //const { chromium } = require('playwright');//Chromiumというブラウザを使う
@@ -50,6 +51,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
   console.error(["page.goto() Start"]);
   await page.goto('https://www.bybit.com/trade/option/usdc/BTC');
   await page.waitForTimeout(6000);
+  cnt++;
   console.error(["page.goto('https://www.bybit.com/trade/option/usdc/BTC');"]);
   console.error(["page.goto() End"]);
 
@@ -68,7 +70,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
   let arrRes = [];
   for(let l = 0 ; l < 5 ; l++){
-    console.error(["loop","l=0-4", "l=" + l]);
+    console.error(["loop","l=0-4","l=" + l,"cnt=" + cnt ]);
     for(let j = 0 ; j < arrDDMMYY.length ; j++){  
 
       //日付をクリック
@@ -133,7 +135,8 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await callput(page,dd,mm,yy,j,arrDDMMYY,l);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt);
+      
     
 
 
@@ -149,7 +152,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY,l){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
 
   let PATH = '';
   let meigara = '';
@@ -209,11 +212,11 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l){
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 200,y: 15} });
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(2000);
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["c-" + BTC_C , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ]);
+        console.error(["c-" + BTC_C , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -311,11 +314,11 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l){
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 600,y: 15} });
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(2000);
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["p-" + BTC_P , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ]);
+        console.error(["p-" + BTC_P , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
 
         
         //権利行使価格

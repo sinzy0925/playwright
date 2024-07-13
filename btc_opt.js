@@ -1,8 +1,22 @@
+﻿'use strict';
+
 //npx playwright codegen 'https://www.bybit.com/trade/option/usdc/BTC'
 // 左に//を付けるとコメント行になります。プログラムから無視されます。
 //google console
 //npx playwright install 
 //エラーが出るので、指示に従う
+
+//LINE Messaging APIを使って、LINE Botから定型文を送信する
+//https://blog.kimizuka.org/entry/2023/11/08/232842
+
+
+require('dotenv').config();
+let cnt = -1;
+let lineCnt = {cnt:0};
+let lineAlert = 750;
+console.error(['lineAlert',lineAlert]);
+console.error(['lineAlert',lineAlert]);
+console.error(['lineAlert',lineAlert]);
 
 var express = require("express");
 var app = express();
@@ -12,7 +26,6 @@ var server = app.listen(8080, function(){
 app.use('../Dropbox/Attachments', express.static(__dirname + '../Dropbox/Attachments'));
 
 const fs = require( 'fs' );
-let cnt = -1;
 
 
 //const { chromium } = require('playwright');//Chromiumというブラウザを使う
@@ -26,7 +39,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
   loop = 0;
   //バグ
   //https://github.com/microsoft/playwright/issues/27600
-  ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81"
+  let ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.1938.81"
   //page = browser.new_page(user_agent=ua)
   //const browser = await chromium.launch({
   const browser = await firefox.launch({
@@ -34,7 +47,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
     //headless: false //false 画面あり　true 画面なし
   });
   const context = await browser.newContext();//contextを使う宣言をする
-  const page = await context.newPage(user_agent=ua);            //pageを使う宣言をする
+  const page = await context.newPage();            //pageを使う宣言をする
   let timeout  = 30000;                    //timeoutを30000ミリ秒に設定する
   page.setDefaultTimeout(timeout);   //デフォルトタイムアウトを30000ミリ秒に設定する。
   await page.setViewportSize({
@@ -135,7 +148,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert);
       
     
 
@@ -152,7 +165,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
 
   let PATH = '';
   let meigara = '';
@@ -183,7 +196,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
   for(let i = 0 ; i <= 2 ; i++){
     await page.waitForTimeout(500);
 
-    let BTC_C     = dd + mm + yy + '-' + arrKenri_c[i] ;
+    let BTC_C      = dd + mm        + yy + '-' + arrKenri_c[i] ;
+    let BTC_C_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_c[i] + '000[C]';
 
     meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
@@ -224,7 +238,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
         
 
         //ymd
-        ymd = new Date().toLocaleString('ja-JP', {
+        let ymd = new Date().toLocaleString('ja-JP', {
           timeZone: 'Asia/Tokyo', 
           year: 'numeric', month: '2-digit' ,day: '2-digit',
           hour: '2-digit', minute: '2-digit',second: '2-digit'});
@@ -265,12 +279,23 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
+        console.error(['lineAlert',lineAlert]);
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
     
-    
+        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+                      + BTC_C_line 
+                      + '\n[Sell]:' + sell 
+                      + '\n[原資産]:' + genshi 
+                      + '\n' + ymd
+                      + '\nCount:' + lineCnt.cnt;
+          await sendline(linemsg);
+          console.error(linemsg);
+          lineCnt.cnt++;
+        }
       
 
 
@@ -285,7 +310,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
   for(let i = 0 ; i <= 2 ; i++){
     await page.waitForTimeout(500);
 
-    let BTC_P     = dd + mm + yy + '-' + arrKenri_p[i] ;
+    let BTC_P      = dd + mm        + yy + '-' + arrKenri_p[i] ;
+    let BTC_P_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_p[i] + '000[P]';
     
     meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
@@ -326,7 +352,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
         
 
         //ymd
-        ymd = new Date().toLocaleString('ja-JP', {
+        let ymd = new Date().toLocaleString('ja-JP', {
           timeZone: 'Asia/Tokyo', 
           year: 'numeric', month: '2-digit' ,day: '2-digit',
           hour: '2-digit', minute: '2-digit',second: '2-digit'});
@@ -367,10 +393,23 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH, resC );
+        console.error(['lineAlert',lineAlert]);
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
+
+        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+                      + BTC_P_line
+                      + '\n[Sell]:' + sell 
+                      + '\n[原資産]:' + genshi 
+                      + '\n' + ymd
+                      + '\nCount:' + lineCnt.cnt;
+          await sendline(linemsg);
+          console.error(linemsg);
+          lineCnt.cnt++;
+        }
     
     
       
@@ -387,3 +426,26 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt){
 
 }//async function callput(page,dd,mm,yy){
 
+async function sendline(linemsg) {
+  //LINE Messaging APIを使って、LINE Botから定型文を送信する
+  //https://blog.kimizuka.org/entry/2023/11/08/232842
+
+  const line = require('@line/bot-sdk');
+  const { CHANNEL_SECRET, CHANNEL_TOKEN } = process.env;
+  const config = {
+      channelSecret: CHANNEL_SECRET,
+      channelAccessToken: CHANNEL_TOKEN
+  };
+  const client = new line.Client(config);
+  const messages = [{
+    type: 'text',
+    text: '[Bybit]\n[USDCオプション]\n'+ linemsg
+  }];
+
+  try {
+    await client.broadcast(messages);
+  } catch (error) {
+    console.log(`${ error.statusMessage }`);
+    console.log(error.originalError.response.data);
+  }
+}

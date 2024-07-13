@@ -9,6 +9,10 @@
 //LINE Messaging APIを使って、LINE Botから定型文を送信する
 //https://blog.kimizuka.org/entry/2023/11/08/232842
 
+//環境変数の代わりに .env ファイルを使用する (dotenv)
+//https://maku77.github.io/nodejs/env/dotenv.html
+
+
 
 require('dotenv').config();
 let cnt = -1;

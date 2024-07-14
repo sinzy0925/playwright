@@ -1,5 +1,4 @@
 ﻿'use strict';
-
 //npx playwright codegen 'https://www.bybit.com/trade/option/usdc/BTC'
 // 左に//を付けるとコメント行になります。プログラムから無視されます。
 //google console
@@ -25,6 +24,8 @@ app.get('/public/download', (req, res) => {
   res.download("./public/download.html");
 })
 
+
+
 const fs = require( 'fs' );
 require('dotenv').config();
 let cnt = -1;
@@ -34,6 +35,18 @@ console.error(['lineAlert',lineAlert]);
 console.error(['lineAlert',lineAlert]);
 console.error(['lineAlert',lineAlert]);
 
+const files = fs.readdirSync('public/');
+let pathtext ='';
+for(let i = 0 ; i < files.length ; i++){
+  if(files[i].indexOf('down') == -1){
+    pathtext += '<br> <a href="' + files[i] + '" target="_blank">' + files[i] + '</a>\n';
+    if(i == 2 || i == 5 || i == 9){
+      pathtext += '<br>'
+    }
+  }  
+}
+console.log([pathtext]);
+
 let arrDDMMYY = [];
 arrDDMMYY[0] = '26-07-24';
 arrDDMMYY[1] = '02-08-24';
@@ -41,11 +54,15 @@ arrDDMMYY[1] = '02-08-24';
 //権利行使価格
 let kenri_c_ = 63;//call
 let kenri_p_ = 53;//put
+
+/*
 let arrKenri_c = [];
 let arrKenri_p = [];
 
-let pathtextC = '';
-let pathtextP = '';
+let pathtextC0 = '';
+let pathtextC1 = '';
+let pathtextP0 = '';
+let pathtextP1 = '';
 let pathtext = '';
 
 let arrPath = [];//arrPath[i][j][Call,put]
@@ -54,23 +71,35 @@ for(let i = 0 ; i <= 2 ; i++){
   for(let j = 0 ; j < arrDDMMYY.length ; j++){ 
     //console.error(arrPath[i][j][0]);
     //console.error(arrPath[i][j][1]);
-    pathtextC += '<br> <a href="'     + arrPath[i][j][0] + '.html' 
-              +  '" target="_blank">' + arrPath[i][j][0] + '.html' + '</a>\n';
-    pathtextP += '<br> <a href="'     + arrPath[i][j][1] + '.html'
-              +  '" target="_blank">' + arrPath[i][j][1] + '.html' + '</a>\n';
+    if(j == 0){
+      pathtextC0 += '<br> <a href="'     + arrPath[i][j][0] + '.html' 
+                 +  '" target="_blank">' + arrPath[i][j][0] + '.html' + '</a>\n';
+      pathtextP0 += '<br> <a href="'     + arrPath[i][j][1] + '.html'
+                 +  '" target="_blank">' + arrPath[i][j][1] + '.html' + '</a>\n';
+    }else{
+      pathtextC1 += '<br> <a href="'     + arrPath[i][j][0] + '.html' 
+                 +  '" target="_blank">' + arrPath[i][j][0] + '.html' + '</a>\n';
+      pathtextP1 += '<br> <a href="'     + arrPath[i][j][1] + '.html'
+                 +  '" target="_blank">' + arrPath[i][j][1] + '.html' + '</a>\n';
+
+    }
   }
 }
-pathtext = pathtextC + '<br>\n' + pathtextP;
+pathtext = pathtextC0 + '<br>\n'
+         + pathtextC1 + '<br>\n'
+         + pathtextP0 + '<br>\n'
+         + pathtextP1 
+         ;
 console.error([pathtext]);
 console.error(arrPath.flat());
-
+*/
 
 
 app.get('/public', (req, res) => {
   res.send(
     'click!<br>'
     + pathtext 
-    + '<br><br> <a href="download.html" target="_blank">download.html</a>\n'
+    + '<br><br> <a href="zdownload.html" target="_blank">zdownload.html</a>\n'
   );
 })
 
@@ -191,7 +220,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c_,kenri_p_);
       
     
 
@@ -207,12 +236,14 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c_,kenri_p_){
 
   let PATH = '';
   let meigara = '';
 
   //権利行使価格
+  let arrKenri_c = [];
+  let arrKenri_p = [];
   let kenri_c = 0 ;//call
   let kenri_p = 0 ;//put
   if(j == 0){
@@ -239,27 +270,22 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath
     let BTC_C      = dd + mm        + yy + '-' + arrKenri_c[i] ;
     let BTC_C_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_c[i] + '000[C]';
 
-/*
+
     meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_c[i];
 
     if(i == 0){
-      meigara = 'a' + j + 'C' + meigara;
+      meigara = 'C' + meigara + 'a' + j;
     }else{
-      meigara =           'C' + meigara;
+      meigara = 'C' + meigara;
     }
 
     PATH = urlpath//'../Dropbox/Attachments/' 
          + meigara
          + '.html';
     
-    console.error(PATH);
-*/         
-    PATH = urlpath + arrPath[i][j][0] + '.html';
-    //console.error(PATH);
-
     //コール側をクリックできるか確認
     let test1 = await page.$('#BTC-' + BTC_C + '000');
 
@@ -322,12 +348,12 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath
 
         let resC = "";
         resC = genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola +',' 
-             + arrPath[i][j][0]  +  ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
+             + meigara  +  ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
-        fs.appendFileSync( urlpath + 'download.html', resC );
+        fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.error(['lineAlert',lineAlert]);
+        console.error('lineAlert',lineAlert);
         console.warn([PATH]);
         console.error([resC]);
 
@@ -361,28 +387,23 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath
     let BTC_P      = dd + mm        + yy + '-' + arrKenri_p[i] ;
     let BTC_P_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_p[i] + '000[P]';
     
-/*    meigara = arrDDMMYY[j].split('-')[2]  
+    meigara = arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_p[i];
 
     if(i == 0){
-      meigara = 'a' + j + 'P' + meigara;
+      meigara = 'P' + meigara + 'a' + j;
     }else{
-      meigara =           'P' + meigara;
+      meigara = 'P' + meigara;
     }
 
     PATH = urlpath//'../Dropbox/Attachments/' 
          + meigara
          + '.html';
-
-    console.error(PATH);
-*/
-    PATH = urlpath + arrPath[i][j][1] + '.html';
-    //console.error(PATH);
      
 
-    //コール側をクリックできるか確認
+    //put側をクリックできるか確認
     let test1 = await page.$('#BTC-' + BTC_P + '000');
 
     if(test1 != null){
@@ -444,12 +465,12 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrPath
 
         let resC = "";
         resC = genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola + ',' 
-             + arrPath[i][j][1] + ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
+             + meigara + ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH, resC );
-        fs.appendFileSync( urlpath + 'download.html', resC );
+        fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.error(['lineAlert',lineAlert]);
+        console.error('lineAlert',lineAlert);
         console.warn([PATH]);
         console.error([resC]);
 
@@ -547,11 +568,11 @@ function makepath(arrDDMMYY,kenri_c_,kenri_p_) {
           + '-' + arrKenri_p[i];
   
       if(i == 0){
-        meigara_c = 'a' + j + 'C' + meigara_c;
-        meigara_p = 'a' + j + 'P' + meigara_p;
+        meigara_c = 'C' + meigara_c + 'a' + j;
+        meigara_p = 'P' + meigara_p + 'a' + j;
       }else{
-        meigara_c =           'C' + meigara_c;
-        meigara_p =           'P' + meigara_p;
+        meigara_c = 'C' + meigara_c;
+        meigara_p = 'P' + meigara_p;
       }
   
       let PATHc = meigara_c ;

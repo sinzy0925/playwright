@@ -101,7 +101,7 @@ console.error(htmltext);
 app.get('/public', (req, res) => {
   res.send(
     'クリック'
-    + htmltext
+    + htmltext + '<br><br> <a href="download.html" target="_blank">download.html</a>\n'
   );
 })
 

@@ -12,6 +12,8 @@
 //https://maku77.github.io/nodejs/env/dotenv.html
 
 
+const fs = require( 'fs' );
+require('dotenv').config();
 let urlpath = 'public/';//'../Dropbox/Attachments'
 let express = require("express");
 let app = express();
@@ -20,88 +22,71 @@ let server = app.listen(8080, function(){
 });
 app.use('/public', express.static(__dirname + '/public'));
 
-app.get('/public/download', (req, res) => {
-  res.download("./public/download.html");
-})
-
-
-
-const fs = require( 'fs' );
-require('dotenv').config();
-let cnt = -1;
-let lineCnt = {cnt:0};
-let lineAlert = 2750;
-console.error(['lineAlert',lineAlert]);
-console.error(['lineAlert',lineAlert]);
-console.error(['lineAlert',lineAlert]);
-
 const files = fs.readdirSync('public/');
 let pathtext ='';
 for(let i = 0 ; i < files.length ; i++){
   if(files[i].indexOf('down') == -1){
-    pathtext += '<br> <a href="' + files[i] + '" target="_blank">' + files[i] + '</a>\n';
-    if(i == 2 || i == 5 || i == 9){
+    pathtext += '<br> <a href="' + files[i] + '">' + files[i] + '</a>\n';
+    if(i == 2 || i == 5 || i == 8){
       pathtext += '<br>'
     }
   }  
 }
-console.log([pathtext]);
-
-let arrDDMMYY = [];
-arrDDMMYY[0] = '26-07-24';
-arrDDMMYY[1] = '02-08-24';
-
-//権利行使価格
-let kenri_c_ = 63;//call
-let kenri_p_ = 53;//put
-
-/*
-let arrKenri_c = [];
-let arrKenri_p = [];
-
-let pathtextC0 = '';
-let pathtextC1 = '';
-let pathtextP0 = '';
-let pathtextP1 = '';
-let pathtext = '';
-
-let arrPath = [];//arrPath[i][j][Call,put]
-arrPath = makepath(arrDDMMYY,kenri_c_,kenri_p_) ;
-for(let i = 0 ; i <= 2 ; i++){ 
-  for(let j = 0 ; j < arrDDMMYY.length ; j++){ 
-    //console.error(arrPath[i][j][0]);
-    //console.error(arrPath[i][j][1]);
-    if(j == 0){
-      pathtextC0 += '<br> <a href="'     + arrPath[i][j][0] + '.html' 
-                 +  '" target="_blank">' + arrPath[i][j][0] + '.html' + '</a>\n';
-      pathtextP0 += '<br> <a href="'     + arrPath[i][j][1] + '.html'
-                 +  '" target="_blank">' + arrPath[i][j][1] + '.html' + '</a>\n';
-    }else{
-      pathtextC1 += '<br> <a href="'     + arrPath[i][j][0] + '.html' 
-                 +  '" target="_blank">' + arrPath[i][j][0] + '.html' + '</a>\n';
-      pathtextP1 += '<br> <a href="'     + arrPath[i][j][1] + '.html'
-                 +  '" target="_blank">' + arrPath[i][j][1] + '.html' + '</a>\n';
-
-    }
-  }
-}
-pathtext = pathtextC0 + '<br>\n'
-         + pathtextC1 + '<br>\n'
-         + pathtextP0 + '<br>\n'
-         + pathtextP1 
-         ;
-console.error([pathtext]);
-console.error(arrPath.flat());
-*/
-
-
 app.get('/public', (req, res) => {
   res.send(
     'click!<br>'
     + pathtext 
-    + '<br><br> <a href="zdownload.html" target="_blank">zdownload.html</a>\n'
+    + '<br><br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
+    + '<br><br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
   );
 })
+
+app.get('/public/download', (req, res) => {
+  res.download("./public/zdownload.html");
+})
+app.get('/public/del', (req, res) => {
+  let deletefiels = ""
+  let files2 = fs.readdirSync("public/");
+  let filter2 = files2.filter(one_file => 
+      { return fs.statSync('public/' + one_file).isFile() });
+  //res.send(filter2);
+  
+  for(let i =0 ; i < filter2.length ; i++){
+      //res.send(filter2[i]);
+      fs.unlinkSync('public/' + filter2[i]);
+      console.error(filter2[i]);
+      deletefiels += '<br>' + filter2[i] + ' is Deleted.';
+  }
+  res.send(deletefiels);
+})
+
+
+
+
+let cnt = -1;
+let lineCnt = {cnt:0};
+
+let lineAlert = [];//5750;
+lineAlert[0] = [7400,1400];
+lineAlert[1] = [7200,1200];
+lineAlert[2] = [7000,1000];
+console.error(['lineAlertC0',lineAlert[0][0] , 'lineAlertP0',lineAlert[0][1]]);
+console.error(['lineAlertC1',lineAlert[1][0] , 'lineAlertP1',lineAlert[1][1]]);
+console.error(['lineAlertC2',lineAlert[2][0] , 'lineAlertP2',lineAlert[2][1]]);
+
+//権利行使価格
+let arrKenri = [];
+arrKenri[0] = [71,61];//C,P
+arrKenri[1] = [72,60];//C,P
+console.error(['権利行使価格 0 C : ' + arrKenri[0][0]],['権利行使価格 0 P : ' + arrKenri[0][1]]);
+console.error(['権利行使価格 1 C : ' + arrKenri[1][0]],['権利行使価格 1 P : ' + arrKenri[1][1]]);
+
+
+
+let arrDDMMYY = [];
+arrDDMMYY[0] = '26-07-24';
+arrDDMMYY[1] = '02-08-24';
 
 
 
@@ -220,7 +205,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c_,kenri_p_);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenri);
       
     
 
@@ -236,31 +221,31 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c_,kenri_p_){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenri){
 
   let PATH = '';
   let meigara = '';
 
   //権利行使価格
-  let arrKenri_c = [];
-  let arrKenri_p = [];
   let kenri_c = 0 ;//call
   let kenri_p = 0 ;//put
   if(j == 0){
-    kenri_c = kenri_c_     ;//call
-    kenri_p = kenri_p_     ;//put
+    kenri_c = arrKenri[0][0] ;//call
+    kenri_p = arrKenri[0][1] ;//put
   }else{
-    kenri_c = kenri_c_ + 1 ;//call
-    kenri_p = kenri_p_ - 1 ;//put
+    kenri_c = arrKenri[1][0] ;//call
+    kenri_p = arrKenri[1][1] ;//put
   }
   
+  let arrKenri_c = [];
   arrKenri_c[0] = kenri_c           ;//call
-  arrKenri_c[1] = arrKenri_c[0] - 1 ;
-  arrKenri_c[2] = arrKenri_c[0] + 1 ;
+  arrKenri_c[1] = arrKenri_c[0] + 1 ;
+  arrKenri_c[2] = arrKenri_c[0] + 2 ;
   
+  let arrKenri_p = [];
   arrKenri_p[0] = kenri_p           ;//put
   arrKenri_p[1] = arrKenri_p[0] - 1 ;
-  arrKenri_p[2] = arrKenri_p[0] + 1 ;
+  arrKenri_p[2] = arrKenri_p[0] - 2 ;
   //権利行使価格
 
 
@@ -302,7 +287,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["c-" + BTC_C , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
+        console.error(['lineAlertC'+i,lineAlert[i][0]],["c-" + BTC_C ],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -353,14 +338,13 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c
         fs.appendFileSync( PATH , resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.error('lineAlert',lineAlert);
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
     
-        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+        if(i == 0 && sell > lineAlert[i][0] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[i][0] + '\n\n'
                       + BTC_C_line 
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
@@ -419,7 +403,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["p-" + BTC_P , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
+        console.error(['lineAlertP'+i,lineAlert[i][1]],["p-" + BTC_P],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -470,14 +454,13 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,kenri_c
         fs.appendFileSync( PATH, resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.error('lineAlert',lineAlert);
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
 
-        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+        if(i == 0 && sell > lineAlert[i][1] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[i][1] + '\n\n'
                       + BTC_P_line
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 

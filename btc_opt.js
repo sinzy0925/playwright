@@ -9,18 +9,23 @@
 //LINE Messaging APIを使って、LINE Botから定型文を送信する
 //https://blog.kimizuka.org/entry/2023/11/08/232842
 
-//環境変数の代わりに .env ファイルを使用する (dotenv)
-//https://maku77.github.io/nodejs/env/dotenv.html
-
-
 
 require('dotenv').config();
 let cnt = -1;
 let lineCnt = {cnt:0};
-let lineAlert = 750;
-console.error(['lineAlert',lineAlert]);
-console.error(['lineAlert',lineAlert]);
-console.error(['lineAlert',lineAlert]);
+let lineAlert = [];//5750;
+lineAlert[0] = [7400,1400];
+lineAlert[1] = [7200,1200];
+lineAlert[2] = [7000,1000];
+console.error(['lineAlertC0',lineAlert[0][0] , 'lineAlertP0',lineAlert[0][1]]);
+console.error(['lineAlertC1',lineAlert[1][0] , 'lineAlertP1',lineAlert[1][1]]);
+console.error(['lineAlertC2',lineAlert[2][0] , 'lineAlertP2',lineAlert[2][1]]);
+
+let arrKenri = [];
+arrKenri[0] = [71,61];//C,P
+arrKenri[1] = [72,60];//C,P
+console.error(['権利行使価格 0 C : ' + arrKenri[0][0]],['権利行使価格 0 P : ' + arrKenri[0][1]]);
+console.error(['権利行使価格 1 C : ' + arrKenri[1][0]],['権利行使価格 1 P : ' + arrKenri[1][1]]);
 
 var express = require("express");
 var app = express();
@@ -152,7 +157,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
       dd = parseInt(dd);
 
         
-      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert);
+      await callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenri);
       
     
 
@@ -169,7 +174,7 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
 })();
 
-async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
+async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenri){
 
   let PATH = '';
   let meigara = '';
@@ -178,23 +183,23 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
   let kenri_p = 0;//put
 
   if(j == 0){
-    kenri_c = 63 ;//call
-    kenri_p = 53 ;//put
+    kenri_c = arrKenri[0][0] ;//call
+    kenri_p = arrKenri[0][1] ;//put
   }else{
-    kenri_c = 63 + 1 ;//call
-    kenri_p = 53 - 1 ;//put
+    kenri_c = arrKenri[1][0] ;//call
+    kenri_p = arrKenri[1][1] ;//put
   }
 
   //権利行使価格
   let arrKenri_c = [];
   arrKenri_c[0] = kenri_c           ;//call
-  arrKenri_c[1] = arrKenri_c[0] - 1 ;
-  arrKenri_c[2] = arrKenri_c[0] + 1 ;
+  arrKenri_c[1] = arrKenri_c[0] + 1 ;
+  arrKenri_c[2] = arrKenri_c[0] + 2 ;
 
   let arrKenri_p = [];
   arrKenri_p[0] = kenri_p           ;//put
   arrKenri_p[1] = arrKenri_p[0] - 1 ;
-  arrKenri_p[2] = arrKenri_p[0] + 1 ;
+  arrKenri_p[2] = arrKenri_p[0] - 2 ;
 
 
   for(let i = 0 ; i <= 2 ; i++){
@@ -209,9 +214,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
             + '-' + arrKenri_c[i];
 
     if(i == 0){
-      meigara = '#' + j + 'C' + meigara;
+      meigara = 'C' + meigara + 'a' + j ;
     }else{
-      meigara =           'C' + meigara;
+      meigara = 'C' + meigara;
     }
 
     PATH = '../Dropbox/Attachments/' 
@@ -224,6 +229,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
     if(test1 != null){
       try{
         if(i == 0){
+          console.error("");        
           console.error(["Start async function call"]);
           console.error("");        
         }
@@ -234,7 +240,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["c-" + BTC_C , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
+        console.error(['lineAlertC'+i,lineAlert[i][0]],["c-" + BTC_C ],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -283,14 +289,15 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
-        console.error(['lineAlert',lineAlert]);
+        fs.appendFileSync( '../Dropbox/Attachments/' + 'zdownload.html', resC );
+
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
     
-        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+        if(i == 0 && sell > lineAlert[i][0] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[i][0] + '\n\n'
                       + BTC_C_line 
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
@@ -323,9 +330,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
             + '-' + arrKenri_p[i];
 
     if(i == 0){
-      meigara = '#' + j + 'P' + meigara;
+      meigara = 'P' + meigara + 'a' + j;
     }else{
-      meigara =           'P' + meigara;
+      meigara = 'P' + meigara;
     }
 
     PATH = '../Dropbox/Attachments/' 
@@ -338,6 +345,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
     if(test1 != null){
       try{
         if(i == 0){
+          console.error("");        
           console.error(["Start async function put"]);
           console.error("");        
         }
@@ -348,7 +356,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(["p-" + BTC_P , "[i:0-2]" , "[now i:" + i + "]" ,"j:"+ j ,"l:"+ l ,"cnt:"+ cnt]);
+        console.error(['lineAlertP'+i,lineAlert[i][1]],["p-" + BTC_P],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -397,14 +405,15 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert){
              + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH, resC );
-        console.error(['lineAlert',lineAlert]);
+        fs.appendFileSync( '../Dropbox/Attachments/' + 'zdownload.html', resC );
+        
         console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
 
-        if(i == 0 && sell > lineAlert && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert + '\n\n'
+        if(i == 0 && sell > lineAlert[i][1] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[i][1] + '\n\n'
                       + BTC_P_line
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 

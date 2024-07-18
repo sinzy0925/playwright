@@ -21,6 +21,8 @@ let server = app.listen(8080, function(){
     console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
 app.use('/public', express.static(__dirname + '/public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const files = fs.readdirSync('public/');
 let pathtext ='';
@@ -32,15 +34,8 @@ for(let i = 0 ; i < files.length ; i++){
     }
   }  
 }
-app.get('/public', (req, res) => {
-  res.send(
-    'click!<br>'
-    + pathtext 
-    + '<br><br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
-    + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
-    + '<br><br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
-  );
-})
+
+
 
 app.get('/public/download', (req, res) => {
   res.download("./public/zdownload.html");
@@ -63,30 +58,233 @@ app.get('/public/del', (req, res) => {
 
 
 
+let arrDDMMYY = [];
+arrDDMMYY[0] = '26-07-24';
+arrDDMMYY[1] = '02-08-24';
 
 let cnt = -1;
 let lineCnt = {cnt:0};
 
+
 let lineAlert = [];//5750;
-lineAlert[0] = [7400,1400];
-lineAlert[1] = [7200,1200];
-lineAlert[2] = [7000,1000];
-console.error(['lineAlertC0',lineAlert[0][0] , 'lineAlertP0',lineAlert[0][1]]);
-console.error(['lineAlertC1',lineAlert[1][0] , 'lineAlertP1',lineAlert[1][1]]);
-console.error(['lineAlertC2',lineAlert[2][0] , 'lineAlertP2',lineAlert[2][1]]);
+//lineAlert[0:C] = [[7100:0日、権利行使0番,7200:0日、権利行使1番,7300:0日、権利行使2番]
+//                 ,[7200:1日、権利行使0番,7300:1日、権利行使1番,7400:1日、権利行使2番]];//C 
+//lineAlert[1:P] = [[6100:0日、権利行使0番,6000:0日、権利行使1番,5900:0日、権利行使2番]
+//                 ,[6000:1日、権利行使0番,5900:1日、権利行使1番,5800:1日、権利行使2番]];//P 
+lineAlert[0] = [[7100,7200,7300],[7200,7300,7400]];//C 
+lineAlert[1] = [[6100,6000,5900],[6000,5900,5800]];//P 
 
-//権利行使価格
 let arrKenri = [];
-arrKenri[0] = [71,61];//C,P
-arrKenri[1] = [72,60];//C,P
-console.error(['権利行使価格 0 C : ' + arrKenri[0][0]],['権利行使価格 0 P : ' + arrKenri[0][1]]);
-console.error(['権利行使価格 1 C : ' + arrKenri[1][0]],['権利行使価格 1 P : ' + arrKenri[1][1]]);
+//arrKenri[0:C] = [[71:0日、権利行使0番,72:0日、権利行使1番,73:0日、権利行使2番]
+//                ,[72:1日、権利行使0番,73:1日、権利行使2番,74:1日、権利行使2番]]
+//arrKenri[1:P] = [[61:0日、権利行使0番,60:0日、権利行使1番,59:0日、権利行使2番]
+//                ,[60:1日、権利行使0番,59:1日、権利行使2番,58:1日、権利行使2番]]
+arrKenri[0] = [[71,72,73],[72,73,74]];//C
+arrKenri[1] = [[61,60,59],[60,59,58]];//P
+
+let ac0 = fs.readFileSync("public/paramAlertC0.csv", 'utf-8');
+let ac1 = fs.readFileSync("public/paramAlertC1.csv", 'utf-8');
+let ap0 = fs.readFileSync("public/paramAlertP0.csv", 'utf-8');
+let ap1 = fs.readFileSync("public/paramAlertP1.csv", 'utf-8');
+let kc0 = fs.readFileSync("public/paramKenriC0.csv", 'utf-8');
+let kc1 = fs.readFileSync("public/paramKenriC1.csv", 'utf-8');
+let kp0 = fs.readFileSync("public/paramKenriP0.csv", 'utf-8');
+let kp1 = fs.readFileSync("public/paramKenriP1.csv", 'utf-8');
+console.error([ac0],[ac1],[ap0],[ap1],[kc0],[kc1],[kp0],[kp1])
 
 
+let ac00 = ac0.split('\r')[0].split(',');
+let ac01 = ac1.split('\r')[0].split(',');
+let ap00 = ap0.split('\r')[0].split(',');
+let ap01 = ap1.split('\r')[0].split(',');
+lineAlert[0][0] = [ac00[0],ac00[1],ac00[2]];
+lineAlert[0][1] = [ac01[0],ac01[1],ac01[2]];
+lineAlert[1][0] = [ap00[0],ap00[1],ap00[2]];
+lineAlert[1][1] = [ap01[0],ap01[1],ap01[2]];
 
-let arrDDMMYY = [];
-arrDDMMYY[0] = '26-07-24';
-arrDDMMYY[1] = '02-08-24';
+console.error(lineAlert[0][0],lineAlert[0][1])
+console.error(lineAlert[1][0],lineAlert[1][1])
+
+let kc00 = kc0.split('\r')[0].split(',');
+let kc01 = kc1.split('\r')[0].split(',');
+let kp00 = kp0.split('\r')[0].split(',');
+let kp01 = kp1.split('\r')[0].split(',');
+arrKenri[0][0] = [kc00[0],kc00[1],kc00[2]];
+arrKenri[0][1] = [kc01[0],kc01[1],kc01[2]];
+arrKenri[1][0] = [kp00[0],kp00[1],kp00[2]];
+arrKenri[1][1] = [kp01[0],kp01[1],kp01[2]];
+
+console.error(arrKenri[0][0],arrKenri[0][1])
+console.error(arrKenri[1][0],arrKenri[1][1])
+
+console.error('end')
+
+
+app.get('/public', (req, res) => {
+  res.send(
+    'click!<br>'
+    + pathtext 
+    + '<br><br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
+    + '<br><br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
+    + '<br><br><form action="/" method="post">'
+      + '<br>パラメータ設定'
+      
+      + '<br>日時 : '+ arrDDMMYY[0]
+      + '<br>ラインアラートC  '
+      + '<input type="text" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
+      + '<input type="text" name="alertCd0k1" value="'+lineAlert[0][0][1]+'">'
+      + '<input type="text" name="alertCd0k2" value="'+lineAlert[0][0][2]+'">'
+      + '<br>ラインアラートP  '
+      + '<input type="text" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
+      + '<input type="text" name="alertPd0k1" value="'+lineAlert[1][0][1]+'">'
+      + '<input type="text" name="alertPd0k2" value="'+lineAlert[1][0][2]+'">'
+
+      + '<br><br>日時 : '+ arrDDMMYY[1]
+      + '<br>ラインアラートC  '
+      + '<input type="text" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
+      + '<input type="text" name="alertCd1k1" value="'+lineAlert[0][1][1]+'">'
+      + '<input type="text" name="alertCd1k2" value="'+lineAlert[0][1][2]+'">'
+      + '<br>ラインアラートP  '
+      + '<input type="text" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
+      + '<input type="text" name="alertPd1k1" value="'+lineAlert[1][1][1]+'">'
+      + '<input type="text" name="alertPd1k2" value="'+lineAlert[1][1][2]+'">'
+
+      + '<br><br>日時 : '+ arrDDMMYY[0]
+      + '<br>権利行使価格C  '
+      + '<input type="text" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
+      + '<input type="text" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
+      + '<input type="text" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
+      + '<br>権利行使価格P  '
+      + '<input type="text" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
+      + '<input type="text" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
+      + '<input type="text" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
+
+      + '<br><br>日時 : '+ arrDDMMYY[1]
+      + '<br>権利行使価格C  '
+      + '<input type="text" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
+      + '<input type="text" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
+      + '<input type="text" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
+      + '<br>権利行使価格P  '
+      + '<input type="text" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
+      + '<input type="text" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
+      + '<input type="text" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
+
+      + '<br><input type="submit" value="送信！">'
+      + '</form>'
+  );
+  console.error("")
+  console.error('AlertC0 ' + lineAlert[0][0])
+  console.error('AlertC1 ' + lineAlert[0][1])
+  console.error('AlertP0 ' + lineAlert[1][0])
+  console.error('AlertP1 ' + lineAlert[1][1])
+  console.error('KenriC0 ' + arrKenri[0][0])
+  console.error('KenriC1 ' + arrKenri[0][1])
+  console.error('KenriP0 ' + arrKenri[1][0])
+  console.error('KenriP1 ' + arrKenri[1][1])
+})
+
+app.post('/', function (req, res) {
+  Object.keys(req.body).forEach((key,i) => {
+    //console.error('i:'+i,'key:'+key ,'value:'+req.body[key]);
+  });
+
+  //console.error(Object.values(req.body));
+
+  lineAlert[0][0][0] = Object.values(req.body)[0]
+  lineAlert[0][0][1] = Object.values(req.body)[1]
+  lineAlert[0][0][2] = Object.values(req.body)[2]
+
+  lineAlert[1][0][0] = Object.values(req.body)[3]
+  lineAlert[1][0][1] = Object.values(req.body)[4]
+  lineAlert[1][0][2] = Object.values(req.body)[5]
+
+  lineAlert[0][1][0] = Object.values(req.body)[6]
+  lineAlert[0][1][1] = Object.values(req.body)[7]
+  lineAlert[0][1][2] = Object.values(req.body)[8]
+
+  lineAlert[1][1][0] = Object.values(req.body)[9]
+  lineAlert[1][1][1] = Object.values(req.body)[10]
+  lineAlert[1][1][2] = Object.values(req.body)[11]
+
+
+  arrKenri[0][0][0]  = Object.values(req.body)[12]
+  arrKenri[0][0][1]  = Object.values(req.body)[13]
+  arrKenri[0][0][2]  = Object.values(req.body)[14]
+
+  arrKenri[1][0][0]  = Object.values(req.body)[15]
+  arrKenri[1][0][1]  = Object.values(req.body)[16]
+  arrKenri[1][0][2]  = Object.values(req.body)[17]
+
+  arrKenri[0][1][0]  = Object.values(req.body)[18]
+  arrKenri[0][1][1]  = Object.values(req.body)[19]
+  arrKenri[0][1][2]  = Object.values(req.body)[20]
+
+  arrKenri[1][1][0]  = Object.values(req.body)[21]
+  arrKenri[1][1][1]  = Object.values(req.body)[22]
+  arrKenri[1][1][2]  = Object.values(req.body)[23]
+
+  //res.json(req.body);
+  //res.send('/public');
+
+  let lac0 = '';
+  let lac1 = '';
+  let kec0 = '';
+  let kec1 = '';
+  for(let j = 0 ; j <= 1 ; j++){
+    for(let i = 0 ; i <= 2 ; i++){
+      if(j == 0){
+        lac0 += lineAlert[0][j][i] + ','
+        kec0 += arrKenri[0][j][i]  + ','  
+      }else{
+        lac1 += lineAlert[0][j][i] + ','
+        kec1 += arrKenri[0][j][i]  + ','  
+      }
+    }
+    
+  }
+
+  let lap0 = '';
+  let lap1 = '';
+  let kep0 = '';
+  let kep1 = '';
+  for(let j = 0 ; j <= 1 ; j++){
+    for(let i = 0 ; i <= 2 ; i++){
+      if(j == 0){
+        lap0 += lineAlert[1][j][i] + ','
+        kep0 += arrKenri[1][j][i]  + ','  
+      }else{
+        lap1 += lineAlert[1][j][i] + ','
+        kep1 += arrKenri[1][j][i]  + ','  
+
+      }
+    }
+    
+  }
+
+  fs.writeFileSync("public/paramAlertC0.csv", lac0);
+  fs.writeFileSync("public/paramAlertC1.csv", lac1);
+  fs.writeFileSync("public/paramAlertP0.csv", lap0);
+  fs.writeFileSync("public/paramAlertP1.csv", lap1);
+  fs.writeFileSync("public/paramKenriC0.csv", kec0);
+  fs.writeFileSync("public/paramKenriC1.csv", kec1);
+  fs.writeFileSync("public/paramKenriP0.csv", kep0);
+  fs.writeFileSync("public/paramKenriP1.csv", kep1);
+
+  console.error("")
+  console.error("write public/paramAlertC0.csv", lac0)
+  console.error("write public/paramAlertC1.csv", lac1)
+  console.error("write public/paramAlertP0.csv", lap0)
+  console.error("write public/paramAlertP1.csv", lap1)
+
+  console.error("write public/paramKenriC0.csv", kec0)
+  console.error("write public/paramKenriC1.csv", kec1)
+  console.error("write public/paramKenriP0.csv", kep0)
+  console.error("write public/paramKenriP1.csv", kep1)
+
+  res.redirect(301, 'public/')
+})
+
 
 
 
@@ -237,15 +435,26 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     kenri_p = arrKenri[1][1] ;//put
   }
   
-  let arrKenri_c = [];
-  arrKenri_c[0] = kenri_c           ;//call
-  arrKenri_c[1] = arrKenri_c[0] + 1 ;
-  arrKenri_c[2] = arrKenri_c[0] + 2 ;
   
+  let arrKenri_c = [];
   let arrKenri_p = [];
-  arrKenri_p[0] = kenri_p           ;//put
-  arrKenri_p[1] = arrKenri_p[0] - 1 ;
-  arrKenri_p[2] = arrKenri_p[0] - 2 ;
+  if(j == 0){
+    arrKenri_c[0] = arrKenri[0][0][0] ;//call
+    arrKenri_c[1] = arrKenri[0][0][1] ;
+    arrKenri_c[2] = arrKenri[0][0][2] ;
+    
+    arrKenri_p[0] = arrKenri[1][0][0] ;//put
+    arrKenri_p[1] = arrKenri[1][0][1] ;
+    arrKenri_p[2] = arrKenri[1][0][2] ;  
+  }else{
+    arrKenri_c[0] = arrKenri[0][1][0] ;//call
+    arrKenri_c[1] = arrKenri[0][1][1] ;
+    arrKenri_c[2] = arrKenri[0][1][2] ;
+    
+    arrKenri_p[0] = arrKenri[1][1][0] ;//put
+    arrKenri_p[1] = arrKenri[1][1][1] ;
+    arrKenri_p[2] = arrKenri[1][1][2] ;  
+  }
   //権利行使価格
 
 
@@ -277,7 +486,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     if(test1 != null){
       try{
         if(i == 0){
-          console.error(["Start async function call"]);
+          console.error(["Start async function call " + meigara]);
           console.error("");        
         }
       
@@ -287,7 +496,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(['lineAlertC'+i,lineAlert[i][0]],["c-" + BTC_C ],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
+        console.error(['lineAlertC'+i,lineAlert[0][j][i]],["c-" + BTC_C ],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -393,7 +602,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     if(test1 != null){
       try{
         if(i == 0){
-          console.error(["Start async function put"]);
+          console.error(["Start async function put " + meigara]);
           console.error("");        
         }
       
@@ -403,7 +612,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(['lineAlertP'+i,lineAlert[i][1]],["p-" + BTC_P],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
+        console.error(['lineAlertP'+i,lineAlert[1][j][i]],["p-" + BTC_P],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格

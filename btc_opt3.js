@@ -14,42 +14,35 @@
 
 const fs = require( 'fs' );
 require('dotenv').config();
-let urlpath = 'public/';//'../Dropbox/Attachments'
+let urlpath = 'public/';//'../Dropbox/Attachments/'
+//let urlpath = '../Dropbox/Attachments/';
 let express = require("express");
 let app = express();
 let server = app.listen(8080, function(){
     console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
-app.use('/public', express.static(__dirname + '/public'));
+//app.use('/public', express.static(__dirname + '/public'));
+app.use('/'+urlpath, express.static(__dirname + '/'+urlpath));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const files = fs.readdirSync('public/');
-let pathtext ='';
-for(let i = 0 ; i < files.length ; i++){
-  if(files[i].indexOf('down') == -1){
-    pathtext += '<br> <a href="' + files[i] + '">' + files[i] + '</a>\n';
-    if(i == 2 || i == 5 || i == 8){
-      pathtext += '<br>'
-    }
-  }  
-}
 
 
 
-app.get('/public/download', (req, res) => {
-  res.download("./public/zdownload.html");
+
+app.get('/' + urlpath+ 'download', (req, res) => {
+  res.download('./' + urlpath + 'zdownload.html');
 })
-app.get('/public/del', (req, res) => {
+
+app.get('/' + urlpath + 'del', (req, res) => {
   let deletefiels = ""
-  let files2 = fs.readdirSync("public/");
-  let filter2 = files2.filter(one_file => 
-      { return fs.statSync('public/' + one_file).isFile() });
+  let files2 = fs.readdirSync(urlpath);
+  let filter2 = files2.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
   //res.send(filter2);
   
   for(let i =0 ; i < filter2.length ; i++){
       //res.send(filter2[i]);
-      fs.unlinkSync('public/' + filter2[i]);
+      fs.unlinkSync(urlpath + filter2[i]);
       console.error(filter2[i]);
       deletefiels += '<br>' + filter2[i] + ' is Deleted.';
   }
@@ -82,94 +75,129 @@ let arrKenri = [];
 arrKenri[0] = [[71,72,73],[72,73,74]];//C
 arrKenri[1] = [[61,60,59],[60,59,58]];//P
 
-let ac0 = fs.readFileSync("public/paramAlertC0.csv", 'utf-8');
-let ac1 = fs.readFileSync("public/paramAlertC1.csv", 'utf-8');
-let ap0 = fs.readFileSync("public/paramAlertP0.csv", 'utf-8');
-let ap1 = fs.readFileSync("public/paramAlertP1.csv", 'utf-8');
-let kc0 = fs.readFileSync("public/paramKenriC0.csv", 'utf-8');
-let kc1 = fs.readFileSync("public/paramKenriC1.csv", 'utf-8');
-let kp0 = fs.readFileSync("public/paramKenriP0.csv", 'utf-8');
-let kp1 = fs.readFileSync("public/paramKenriP1.csv", 'utf-8');
-console.error([ac0],[ac1],[ap0],[ap1],[kc0],[kc1],[kp0],[kp1])
+try{
+  let ac0 = fs.readFileSync(urlpath+"paramAlertC0.csv", 'utf-8');
+  let ac1 = fs.readFileSync(urlpath+"paramAlertC1.csv", 'utf-8');
+  let ap0 = fs.readFileSync(urlpath+"paramAlertP0.csv", 'utf-8');
+  let ap1 = fs.readFileSync(urlpath+"paramAlertP1.csv", 'utf-8');
+  let kc0 = fs.readFileSync(urlpath+"paramKenriC0.csv", 'utf-8');
+  let kc1 = fs.readFileSync(urlpath+"paramKenriC1.csv", 'utf-8');
+  let kp0 = fs.readFileSync(urlpath+"paramKenriP0.csv", 'utf-8');
+  let kp1 = fs.readFileSync(urlpath+"paramKenriP1.csv", 'utf-8');
+  console.error([ac0],[ac1],[ap0],[ap1],[kc0],[kc1],[kp0],[kp1])
 
 
-let ac00 = ac0.split('\r')[0].split(',');
-let ac01 = ac1.split('\r')[0].split(',');
-let ap00 = ap0.split('\r')[0].split(',');
-let ap01 = ap1.split('\r')[0].split(',');
-lineAlert[0][0] = [ac00[0],ac00[1],ac00[2]];
-lineAlert[0][1] = [ac01[0],ac01[1],ac01[2]];
-lineAlert[1][0] = [ap00[0],ap00[1],ap00[2]];
-lineAlert[1][1] = [ap01[0],ap01[1],ap01[2]];
+  let ac00 = ac0.split('\r')[0].split(',');
+  let ac01 = ac1.split('\r')[0].split(',');
+  let ap00 = ap0.split('\r')[0].split(',');
+  let ap01 = ap1.split('\r')[0].split(',');
+  lineAlert[0][0] = [ac00[0],ac00[1],ac00[2]];
+  lineAlert[0][1] = [ac01[0],ac01[1],ac01[2]];
+  lineAlert[1][0] = [ap00[0],ap00[1],ap00[2]];
+  lineAlert[1][1] = [ap01[0],ap01[1],ap01[2]];
 
-console.error(lineAlert[0][0],lineAlert[0][1])
-console.error(lineAlert[1][0],lineAlert[1][1])
+  console.error(lineAlert[0][0],lineAlert[0][1])
+  console.error(lineAlert[1][0],lineAlert[1][1])
 
-let kc00 = kc0.split('\r')[0].split(',');
-let kc01 = kc1.split('\r')[0].split(',');
-let kp00 = kp0.split('\r')[0].split(',');
-let kp01 = kp1.split('\r')[0].split(',');
-arrKenri[0][0] = [kc00[0],kc00[1],kc00[2]];
-arrKenri[0][1] = [kc01[0],kc01[1],kc01[2]];
-arrKenri[1][0] = [kp00[0],kp00[1],kp00[2]];
-arrKenri[1][1] = [kp01[0],kp01[1],kp01[2]];
+  let kc00 = kc0.split('\r')[0].split(',');
+  let kc01 = kc1.split('\r')[0].split(',');
+  let kp00 = kp0.split('\r')[0].split(',');
+  let kp01 = kp1.split('\r')[0].split(',');
+  arrKenri[0][0] = [kc00[0],kc00[1],kc00[2]];
+  arrKenri[0][1] = [kc01[0],kc01[1],kc01[2]];
+  arrKenri[1][0] = [kp00[0],kp00[1],kp00[2]];
+  arrKenri[1][1] = [kp01[0],kp01[1],kp01[2]];
 
-console.error(arrKenri[0][0],arrKenri[0][1])
-console.error(arrKenri[1][0],arrKenri[1][1])
+  console.error(arrKenri[0][0],arrKenri[0][1])
+  console.error(arrKenri[1][0],arrKenri[1][1])
 
-console.error('end')
+  console.error('end')
+}catch(e){
+  console.error(e)
+}
 
-
-app.get('/public', (req, res) => {
+app.get('/'+urlpath, (req, res) => {
+  const files  = fs.readdirSync(urlpath);
+  const filter = files.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
+  let pathtext ='';
+  for(let i = 0 ; i < filter.length ; i++){
+    if(filter[i].indexOf('down') == -1){
+      pathtext += '<br> <a href="' + filter[i] + '">' + filter[i] + '</a>\n';
+      if(i == 2 || i == 5 || i == 8){
+        pathtext += '<br>'
+      }
+    }  
+  }
+  
   res.send(
-    'click!<br>'
+    'click!'
     + pathtext 
-    + '<br><br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    + '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
     + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
-    + '<br><br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
-    + '<br><br><form action="/" method="post">'
+    + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
+    + '<br> <form action="/" method="post">'
       + '<br>パラメータ設定'
       
-      + '<br>日時 : '+ arrDDMMYY[0]
-      + '<br>ラインアラートC  '
-      + '<input type="text" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
-      + '<input type="text" name="alertCd0k1" value="'+lineAlert[0][0][1]+'">'
-      + '<input type="text" name="alertCd0k2" value="'+lineAlert[0][0][2]+'">'
-      + '<br>ラインアラートP  '
-      + '<input type="text" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
-      + '<input type="text" name="alertPd0k1" value="'+lineAlert[1][0][1]+'">'
-      + '<input type="text" name="alertPd0k2" value="'+lineAlert[1][0][2]+'">'
+      + '<br>Call  '
+      + '<br> Day:' + arrDDMMYY[0] + ' 権利行使価格 '
+      + '<input type="text" size="3" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
+      + '<input type="text" size="3" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
+      + '<input type="text" size="3" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
+      + ' Alert '
+      + '<input type="text" size="4" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
+      + '<input type="text" size="4" name="alertCd0k1" value="'+lineAlert[0][0][1]+'">'
+      + '<input type="text" size="4" name="alertCd0k2" value="'+lineAlert[0][0][2]+'">'
 
-      + '<br><br>日時 : '+ arrDDMMYY[1]
-      + '<br>ラインアラートC  '
-      + '<input type="text" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
-      + '<input type="text" name="alertCd1k1" value="'+lineAlert[0][1][1]+'">'
-      + '<input type="text" name="alertCd1k2" value="'+lineAlert[0][1][2]+'">'
-      + '<br>ラインアラートP  '
-      + '<input type="text" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
-      + '<input type="text" name="alertPd1k1" value="'+lineAlert[1][1][1]+'">'
-      + '<input type="text" name="alertPd1k2" value="'+lineAlert[1][1][2]+'">'
+      + '<br> Day:' + arrDDMMYY[1] + ' 権利行使価格 '
+      + '<input type="text" size="3" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
+      + '<input type="text" size="3" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
+      + '<input type="text" size="3" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
+      + ' Alert '
+      + '<input type="text" size="4" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
+      + '<input type="text" size="4" name="alertCd1k1" value="'+lineAlert[0][1][1]+'">'
+      + '<input type="text" size="4" name="alertCd1k2" value="'+lineAlert[0][1][2]+'">'
 
+      + '<br>Put  '
+      + '<br> Day:' + arrDDMMYY[0] + ' 権利行使価格 '
+      + '<input type="text" size="3" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
+      + '<input type="text" size="3" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
+      + '<input type="text" size="3" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
+      + ' Alert '
+      + '<input type="text" size="4" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
+      + '<input type="text" size="4" name="alertPd0k1" value="'+lineAlert[1][0][1]+'">'
+      + '<input type="text" size="4" name="alertPd0k2" value="'+lineAlert[1][0][2]+'">'
+
+      + '<br> Day:' + arrDDMMYY[1] + ' 権利行使価格 '
+      + '<input type="text" size="3" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
+      + '<input type="text" size="3" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
+      + '<input type="text" size="3" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
+      + ' Alert '
+      + '<input type="text" size="4" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
+      + '<input type="text" size="4" name="alertPd1k1" value="'+lineAlert[1][1][1]+'">'
+      + '<input type="text" size="4" name="alertPd1k2" value="'+lineAlert[1][1][2]+'">'
+
+      /*
       + '<br><br>日時 : '+ arrDDMMYY[0]
       + '<br>権利行使価格C  '
-      + '<input type="text" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
-      + '<input type="text" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
-      + '<input type="text" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
+      + '<input type="text" size="3" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
+      + '<input type="text" size="3" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
+      + '<input type="text" size="3" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
       + '<br>権利行使価格P  '
-      + '<input type="text" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
-      + '<input type="text" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
-      + '<input type="text" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
+      + '<input type="text" size="3" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
+      + '<input type="text" size="3" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
+      + '<input type="text" size="3" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
 
       + '<br><br>日時 : '+ arrDDMMYY[1]
       + '<br>権利行使価格C  '
-      + '<input type="text" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
-      + '<input type="text" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
-      + '<input type="text" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
+      + '<input type="text" size="3" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
+      + '<input type="text" size="3" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
+      + '<input type="text" size="3" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
       + '<br>権利行使価格P  '
-      + '<input type="text" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
-      + '<input type="text" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
-      + '<input type="text" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
-
+      + '<input type="text" size="3" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
+      + '<input type="text" size="3" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
+      + '<input type="text" size="3" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
+      */
+      
       + '<br><input type="submit" value="送信！">'
       + '</form>'
   );
@@ -191,41 +219,45 @@ app.post('/', function (req, res) {
 
   //console.error(Object.values(req.body));
 
-  lineAlert[0][0][0] = Object.values(req.body)[0]
-  lineAlert[0][0][1] = Object.values(req.body)[1]
-  lineAlert[0][0][2] = Object.values(req.body)[2]
+  arrKenri[0][0][0]  = Object.values(req.body)[0]
+  arrKenri[0][0][1]  = Object.values(req.body)[1]
+  arrKenri[0][0][2]  = Object.values(req.body)[2]
 
-  lineAlert[1][0][0] = Object.values(req.body)[3]
-  lineAlert[1][0][1] = Object.values(req.body)[4]
-  lineAlert[1][0][2] = Object.values(req.body)[5]
+  lineAlert[0][0][0] = Object.values(req.body)[3]
+  lineAlert[0][0][1] = Object.values(req.body)[4]
+  lineAlert[0][0][2] = Object.values(req.body)[5]
 
-  lineAlert[0][1][0] = Object.values(req.body)[6]
-  lineAlert[0][1][1] = Object.values(req.body)[7]
-  lineAlert[0][1][2] = Object.values(req.body)[8]
+  arrKenri[0][1][0]  = Object.values(req.body)[6]
+  arrKenri[0][1][1]  = Object.values(req.body)[7]
+  arrKenri[0][1][2]  = Object.values(req.body)[8]
 
-  lineAlert[1][1][0] = Object.values(req.body)[9]
-  lineAlert[1][1][1] = Object.values(req.body)[10]
-  lineAlert[1][1][2] = Object.values(req.body)[11]
+  lineAlert[0][1][0] = Object.values(req.body)[9]
+  lineAlert[0][1][1] = Object.values(req.body)[10]
+  lineAlert[0][1][2] = Object.values(req.body)[11]
 
 
-  arrKenri[0][0][0]  = Object.values(req.body)[12]
-  arrKenri[0][0][1]  = Object.values(req.body)[13]
-  arrKenri[0][0][2]  = Object.values(req.body)[14]
+  arrKenri[1][0][0]  = Object.values(req.body)[12]
+  arrKenri[1][0][1]  = Object.values(req.body)[13]
+  arrKenri[1][0][2]  = Object.values(req.body)[14]
 
-  arrKenri[1][0][0]  = Object.values(req.body)[15]
-  arrKenri[1][0][1]  = Object.values(req.body)[16]
-  arrKenri[1][0][2]  = Object.values(req.body)[17]
+  lineAlert[1][0][0] = Object.values(req.body)[15]
+  lineAlert[1][0][1] = Object.values(req.body)[16]
+  lineAlert[1][0][2] = Object.values(req.body)[17]
 
-  arrKenri[0][1][0]  = Object.values(req.body)[18]
-  arrKenri[0][1][1]  = Object.values(req.body)[19]
-  arrKenri[0][1][2]  = Object.values(req.body)[20]
+  arrKenri[1][1][0]  = Object.values(req.body)[18]
+  arrKenri[1][1][1]  = Object.values(req.body)[19]
+  arrKenri[1][1][2]  = Object.values(req.body)[20]
 
-  arrKenri[1][1][0]  = Object.values(req.body)[21]
-  arrKenri[1][1][1]  = Object.values(req.body)[22]
-  arrKenri[1][1][2]  = Object.values(req.body)[23]
+  lineAlert[1][1][0] = Object.values(req.body)[21]
+  lineAlert[1][1][1] = Object.values(req.body)[22]
+  lineAlert[1][1][2] = Object.values(req.body)[23]
+
+
+
+
+
 
   //res.json(req.body);
-  //res.send('/public');
 
   let lac0 = '';
   let lac1 = '';
@@ -262,27 +294,27 @@ app.post('/', function (req, res) {
     
   }
 
-  fs.writeFileSync("public/paramAlertC0.csv", lac0);
-  fs.writeFileSync("public/paramAlertC1.csv", lac1);
-  fs.writeFileSync("public/paramAlertP0.csv", lap0);
-  fs.writeFileSync("public/paramAlertP1.csv", lap1);
-  fs.writeFileSync("public/paramKenriC0.csv", kec0);
-  fs.writeFileSync("public/paramKenriC1.csv", kec1);
-  fs.writeFileSync("public/paramKenriP0.csv", kep0);
-  fs.writeFileSync("public/paramKenriP1.csv", kep1);
+  fs.writeFileSync(urlpath+"paramAlertC0.csv", lac0);
+  fs.writeFileSync(urlpath+"paramAlertC1.csv", lac1);
+  fs.writeFileSync(urlpath+"paramAlertP0.csv", lap0);
+  fs.writeFileSync(urlpath+"paramAlertP1.csv", lap1);
+  fs.writeFileSync(urlpath+"paramKenriC0.csv", kec0);
+  fs.writeFileSync(urlpath+"paramKenriC1.csv", kec1);
+  fs.writeFileSync(urlpath+"paramKenriP0.csv", kep0);
+  fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
 
   console.error("")
-  console.error("write public/paramAlertC0.csv", lac0)
-  console.error("write public/paramAlertC1.csv", lac1)
-  console.error("write public/paramAlertP0.csv", lap0)
-  console.error("write public/paramAlertP1.csv", lap1)
+  console.error("write "+urlpath+"paramAlertC0.csv", lac0)
+  console.error("write "+urlpath+"paramAlertC1.csv", lac1)
+  console.error("write "+urlpath+"paramAlertP0.csv", lap0)
+  console.error("write "+urlpath+"paramAlertP1.csv", lap1)
 
-  console.error("write public/paramKenriC0.csv", kec0)
-  console.error("write public/paramKenriC1.csv", kec1)
-  console.error("write public/paramKenriP0.csv", kep0)
-  console.error("write public/paramKenriP1.csv", kep1)
+  console.error("write "+urlpath+"paramKenriC0.csv", kec0)
+  console.error("write "+urlpath+"paramKenriC1.csv", kec1)
+  console.error("write "+urlpath+"paramKenriP0.csv", kep0)
+  console.error("write "+urlpath+"paramKenriP1.csv", kep1)
 
-  res.redirect(301, 'public/')
+  res.redirect(301, urlpath)
 })
 
 
@@ -551,9 +583,11 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         console.error([resC]);
 
         await page.waitForTimeout(500);
+
+        //console.error('lineAlert '+lineAlert[0][j][i])
     
-        if(i == 0 && sell > lineAlert[i][0] && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert[i][0] + '\n\n'
+        if(i == 0 && sell > lineAlert[0][j][i] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[0][j][i] + '\n\n'
                       + BTC_C_line 
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
@@ -585,7 +619,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_p[i];
 
-    if(i == 0){
+    if(i == 2){
       meigara = 'P' + meigara + 'a' + j;
     }else{
       meigara = 'P' + meigara;
@@ -668,8 +702,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
         await page.waitForTimeout(500);
 
-        if(i == 0 && sell > lineAlert[i][1] && lineCnt.cnt < 10){
-          let linemsg = '[SELL Alert]>' + lineAlert[i][1] + '\n\n'
+        if(i == 0 && sell > lineAlert[1][j][i] && lineCnt.cnt < 10){
+          let linemsg = '[SELL Alert]>' + lineAlert[1][j][i] + '\n\n'
                       + BTC_P_line
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 

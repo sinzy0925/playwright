@@ -56,7 +56,7 @@ arrDDMMYY[0] = '26-07-24';
 arrDDMMYY[1] = '02-08-24';
 
 let cnt = -1;
-let lineCnt = {cnt:0};
+let lineCnt = {cntC0:0 , cntC1:0 , cntP0:0 ,cntP1:0};
 
 
 let lineAlert = [];//5750;
@@ -84,7 +84,10 @@ try{
   let kc1 = fs.readFileSync(urlpath+"paramKenriC1.csv", 'utf-8');
   let kp0 = fs.readFileSync(urlpath+"paramKenriP0.csv", 'utf-8');
   let kp1 = fs.readFileSync(urlpath+"paramKenriP1.csv", 'utf-8');
-  console.error([ac0],[ac1],[ap0],[ap1],[kc0],[kc1],[kp0],[kp1])
+  console.error([ac0],[ac1]);
+  console.error([ap0],[ap1]);
+  console.error([kc0],[kc1])
+  console.error([kp0],[kp1])
 
 
   let ac00 = ac0.split('\r')[0].split(',');
@@ -489,7 +492,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
   }
   //権利行使価格
 
-
+  //Call
   for(let i = 0 ; i <= 2 ; i++){
     await page.waitForTimeout(500);
 
@@ -528,7 +531,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(['lineAlertC'+i,lineAlert[0][j][i]],["c-" + BTC_C ],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
+        console.error([meigara],['lineAlertC'+i,lineAlert[0][j][i]],['lineCntC0',lineCnt.cntC0],['lineCntC1',lineCnt.cntC1],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -579,24 +582,38 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         fs.appendFileSync( PATH , resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.warn([PATH]);
+        //console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
 
-        //console.error('lineAlert '+lineAlert[0][j][i])
+        //console.error('lineAlert '+lineAlert[0][j][i]) j==日
+
+        let lineCount = 0;
+        if(j == 0){
+          lineCount = lineCnt.cntC0
+        }else{
+          lineCount = lineCnt.cntC1
+        }
     
-        if(i == 0 && sell > lineAlert[0][j][i] && lineCnt.cnt < 10){
+        if(i == 0 && sell > lineAlert[0][j][i] && lineCount < 5){
           let linemsg = '[SELL Alert]>' + lineAlert[0][j][i] + '\n\n'
                       + BTC_C_line 
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
                       + '\n' + ymd
-                      + '\nCount:' + lineCnt.cnt;
+                      + '\nCount:' + lineCount;
           await sendline(linemsg);
           console.error(linemsg);
-          lineCnt.cnt++;
+          lineCount++;
+          if(j == 0){
+            lineCnt.cntC0 = lineCount;
+          }else{
+            lineCnt.cntC1 = lineCount;
+          }
         }
+
+
       
 
 
@@ -607,7 +624,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
   }//for(let i = 0 ; i <= 2 ; i++){
 
   
-
+  //put
   for(let i = 0 ; i <= 2 ; i++){
     await page.waitForTimeout(500);
 
@@ -646,7 +663,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error(['lineAlertP'+i,lineAlert[1][j][i]],["p-" + BTC_P],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
+        console.error([meigara],['lineAlertP'+i,lineAlert[1][j][i]],['lineCntP0',lineCnt.cntP0],['lineCntP1',lineCnt.cntP1],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -697,21 +714,33 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         fs.appendFileSync( PATH, resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        console.warn([PATH]);
+        //console.warn([PATH]);
         console.error([resC]);
 
         await page.waitForTimeout(500);
 
-        if(i == 0 && sell > lineAlert[1][j][i] && lineCnt.cnt < 10){
+        let lineCount = 0;
+        if(j == 0){
+          lineCount = lineCnt.cntP0
+        }else{
+          lineCount = lineCnt.cntP1
+        }
+
+        if(i == 0 && sell > lineAlert[1][j][i] && lineCount < 5){
           let linemsg = '[SELL Alert]>' + lineAlert[1][j][i] + '\n\n'
                       + BTC_P_line
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
                       + '\n' + ymd
-                      + '\nCount:' + lineCnt.cnt;
+                      + '\nCount:' + lineCount;
           await sendline(linemsg);
           console.error(linemsg);
-          lineCnt.cnt++;
+          lineCount++;
+          if(j == 0){
+            lineCnt.cntP0 = lineCount;
+          }else{
+            lineCnt.cntP1 = lineCount;
+          }
         }
     
     

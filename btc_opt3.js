@@ -16,11 +16,13 @@ const fs = require( 'fs' );
 require('dotenv').config();
 let urlpath = 'public/';//'../Dropbox/Attachments/'
 //let urlpath = '../Dropbox/Attachments/';
+//let urlpath = '../aaa/bbb/';
 let express = require("express");
 let app = express();
 let server = app.listen(8080, function(){
     console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
+//app.use('~/aaa/bbb', express.static(__dirname + '~/aaa/bbb'));
 //app.use('/public', express.static(__dirname + '/public'));
 app.use('/'+urlpath, express.static(__dirname + '/'+urlpath));
 app.use(express.json());
@@ -60,64 +62,19 @@ let lineCnt = {cntC0:0 , cntC1:0 , cntP0:0 ,cntP1:0};
 
 
 let lineAlert = [];//5750;
-//lineAlert[0:C] = [[7100:0日、権利行使0番,7200:0日、権利行使1番,7300:0日、権利行使2番]
-//                 ,[7200:1日、権利行使0番,7300:1日、権利行使1番,7400:1日、権利行使2番]];//C 
-//lineAlert[1:P] = [[6100:0日、権利行使0番,6000:0日、権利行使1番,5900:0日、権利行使2番]
-//                 ,[6000:1日、権利行使0番,5900:1日、権利行使1番,5800:1日、権利行使2番]];//P 
-lineAlert[0] = [[7100,7200,7300],[7200,7300,7400]];//C 
-lineAlert[1] = [[6100,6000,5900],[6000,5900,5800]];//P 
+lineAlert[0] = [[0,0,0],[0,0,0]];//C 
+lineAlert[1] = [[0,0,0],[0,0,0]];//P 
 
 let arrKenri = [];
-//arrKenri[0:C] = [[71:0日、権利行使0番,72:0日、権利行使1番,73:0日、権利行使2番]
-//                ,[72:1日、権利行使0番,73:1日、権利行使2番,74:1日、権利行使2番]]
-//arrKenri[1:P] = [[61:0日、権利行使0番,60:0日、権利行使1番,59:0日、権利行使2番]
-//                ,[60:1日、権利行使0番,59:1日、権利行使2番,58:1日、権利行使2番]]
 arrKenri[0] = [[71,72,73],[72,73,74]];//C
 arrKenri[1] = [[61,60,59],[60,59,58]];//P
 
-try{
-  let ac0 = fs.readFileSync(urlpath+"paramAlertC0.csv", 'utf-8');
-  let ac1 = fs.readFileSync(urlpath+"paramAlertC1.csv", 'utf-8');
-  let ap0 = fs.readFileSync(urlpath+"paramAlertP0.csv", 'utf-8');
-  let ap1 = fs.readFileSync(urlpath+"paramAlertP1.csv", 'utf-8');
-  let kc0 = fs.readFileSync(urlpath+"paramKenriC0.csv", 'utf-8');
-  let kc1 = fs.readFileSync(urlpath+"paramKenriC1.csv", 'utf-8');
-  let kp0 = fs.readFileSync(urlpath+"paramKenriP0.csv", 'utf-8');
-  let kp1 = fs.readFileSync(urlpath+"paramKenriP1.csv", 'utf-8');
-  console.error([ac0],[ac1]);
-  console.error([ap0],[ap1]);
-  console.error([kc0],[kc1])
-  console.error([kp0],[kp1])
+let arrResult =[];
+arrResult = readfile0();
+lineAlert = arrResult[0];
+arrKenri  = arrResult[1];
+arrDDMMYY = arrResult[2];
 
-
-  let ac00 = ac0.split('\r')[0].split(',');
-  let ac01 = ac1.split('\r')[0].split(',');
-  let ap00 = ap0.split('\r')[0].split(',');
-  let ap01 = ap1.split('\r')[0].split(',');
-  lineAlert[0][0] = [ac00[0],ac00[1],ac00[2]];
-  lineAlert[0][1] = [ac01[0],ac01[1],ac01[2]];
-  lineAlert[1][0] = [ap00[0],ap00[1],ap00[2]];
-  lineAlert[1][1] = [ap01[0],ap01[1],ap01[2]];
-
-  console.error(lineAlert[0][0],lineAlert[0][1])
-  console.error(lineAlert[1][0],lineAlert[1][1])
-
-  let kc00 = kc0.split('\r')[0].split(',');
-  let kc01 = kc1.split('\r')[0].split(',');
-  let kp00 = kp0.split('\r')[0].split(',');
-  let kp01 = kp1.split('\r')[0].split(',');
-  arrKenri[0][0] = [kc00[0],kc00[1],kc00[2]];
-  arrKenri[0][1] = [kc01[0],kc01[1],kc01[2]];
-  arrKenri[1][0] = [kp00[0],kp00[1],kp00[2]];
-  arrKenri[1][1] = [kp01[0],kp01[1],kp01[2]];
-
-  console.error(arrKenri[0][0],arrKenri[0][1])
-  console.error(arrKenri[1][0],arrKenri[1][1])
-
-  console.error('end')
-}catch(e){
-  console.error(e)
-}
 
 app.get('/'+urlpath, (req, res) => {
   const files  = fs.readdirSync(urlpath);
@@ -139,72 +96,55 @@ app.get('/'+urlpath, (req, res) => {
     + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
     + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
     + '<br> <form action="/" method="post">'
-      + '<br>パラメータ設定'
+      + '<br>パラメータ設定　※注意：ＳＱ日以外は、すべて数値で入力してください！'
       
-      + '<br>Call  '
-      + '<br> Day:' + arrDDMMYY[0] + ' 権利行使価格 '
-      + '<input type="text" size="3" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
-      + '<input type="text" size="3" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
-      + '<input type="text" size="3" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
+      + '<br>ＳＱ日０ : ' 
+      + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[0]+'">'
+      + '<br>ＣＡＬＬ 権利行使価格 : '
+      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
+      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][1]+'">'
+      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][2]+'">'
       + ' Alert '
-      + '<input type="text" size="4" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
-      + '<input type="text" size="4" name="alertCd0k1" value="'+lineAlert[0][0][1]+'">'
-      + '<input type="text" size="4" name="alertCd0k2" value="'+lineAlert[0][0][2]+'">'
+      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
+      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][1]+'">'
+      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][2]+'">'
 
-      + '<br> Day:' + arrDDMMYY[1] + ' 権利行使価格 '
-      + '<input type="text" size="3" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
-      + '<input type="text" size="3" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
-      + '<input type="text" size="3" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
+      + '<br>ＰＵＴ　 権利行使価格 : '
+      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
+      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][1]+'">'
+      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][2]+'">'
       + ' Alert '
-      + '<input type="text" size="4" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
-      + '<input type="text" size="4" name="alertCd1k1" value="'+lineAlert[0][1][1]+'">'
-      + '<input type="text" size="4" name="alertCd1k2" value="'+lineAlert[0][1][2]+'">'
+      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
+      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][1]+'">'
+      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][2]+'">'
 
-      + '<br>Put  '
-      + '<br> Day:' + arrDDMMYY[0] + ' 権利行使価格 '
-      + '<input type="text" size="3" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
-      + '<input type="text" size="3" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
-      + '<input type="text" size="3" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
+      + '<br>ＳＱ日１ : '
+      + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[1]+'">'
+      + '<br>ＣＡＬＬ 権利行使価格 : '
+      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
+      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][1]+'">'
+      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][2]+'">'
       + ' Alert '
-      + '<input type="text" size="4" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
-      + '<input type="text" size="4" name="alertPd0k1" value="'+lineAlert[1][0][1]+'">'
-      + '<input type="text" size="4" name="alertPd0k2" value="'+lineAlert[1][0][2]+'">'
+      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
+      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][1]+'">'
+      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][2]+'">'
 
-      + '<br> Day:' + arrDDMMYY[1] + ' 権利行使価格 '
-      + '<input type="text" size="3" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
-      + '<input type="text" size="3" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
-      + '<input type="text" size="3" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
+
+      + '<br>ＰＵＴ　 権利行使価格 : '
+      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
+      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][1]+'">'
+      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][2]+'">'
       + ' Alert '
-      + '<input type="text" size="4" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
-      + '<input type="text" size="4" name="alertPd1k1" value="'+lineAlert[1][1][1]+'">'
-      + '<input type="text" size="4" name="alertPd1k2" value="'+lineAlert[1][1][2]+'">'
+      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
+      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][1]+'">'
+      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][2]+'">'
 
-      /*
-      + '<br><br>日時 : '+ arrDDMMYY[0]
-      + '<br>権利行使価格C  '
-      + '<input type="text" size="3" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
-      + '<input type="text" size="3" name="kenriCd0k1" value="'+arrKenri[0][0][1]+'">'
-      + '<input type="text" size="3" name="kenriCd0k2" value="'+arrKenri[0][0][2]+'">'
-      + '<br>権利行使価格P  '
-      + '<input type="text" size="3" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
-      + '<input type="text" size="3" name="kenriPd0k1" value="'+arrKenri[1][0][1]+'">'
-      + '<input type="text" size="3" name="kenriPd0k2" value="'+arrKenri[1][0][2]+'">'
-
-      + '<br><br>日時 : '+ arrDDMMYY[1]
-      + '<br>権利行使価格C  '
-      + '<input type="text" size="3" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
-      + '<input type="text" size="3" name="kenriCd1k1" value="'+arrKenri[0][1][1]+'">'
-      + '<input type="text" size="3" name="kenriCd1k2" value="'+arrKenri[0][1][2]+'">'
-      + '<br>権利行使価格P  '
-      + '<input type="text" size="3" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
-      + '<input type="text" size="3" name="kenriPd1k1" value="'+arrKenri[1][1][1]+'">'
-      + '<input type="text" size="3" name="kenriPd1k2" value="'+arrKenri[1][1][2]+'">'
-      */
       
       + '<br><input type="submit" value="送信！">'
       + '</form>'
   );
   console.error("")
+  console.error("Start app.get()")
   console.error('AlertC0 ' + lineAlert[0][0])
   console.error('AlertC1 ' + lineAlert[0][1])
   console.error('AlertP0 ' + lineAlert[1][0])
@@ -213,55 +153,69 @@ app.get('/'+urlpath, (req, res) => {
   console.error('KenriC1 ' + arrKenri[0][1])
   console.error('KenriP0 ' + arrKenri[1][0])
   console.error('KenriP1 ' + arrKenri[1][1])
+  console.error('DD-MM-YY ' + arrDDMMYY)
+  console.error("END app.get()")
 })
 
 app.post('/', function (req, res) {
+  console.error('')
+  console.error('Start app.post("\/")')
   Object.keys(req.body).forEach((key,i) => {
-    //console.error('i:'+i,'key:'+key ,'value:'+req.body[key]);
+    console.error('i:'+i,'key:'+key ,'value:'+req.body[key]);
   });
+  console.error('');
 
-  //console.error(Object.values(req.body));
+  arrDDMMYY[0] = Object.values(req.body)[0][0];
+  arrDDMMYY[1] = Object.values(req.body)[0][1];
+  
+  arrKenri[0][0][0]  = Object.values(req.body)[1][0]
+  arrKenri[0][0][1]  = Object.values(req.body)[1][1]
+  arrKenri[0][0][2]  = Object.values(req.body)[1][2]
 
-  arrKenri[0][0][0]  = Object.values(req.body)[0]
-  arrKenri[0][0][1]  = Object.values(req.body)[1]
-  arrKenri[0][0][2]  = Object.values(req.body)[2]
+  lineAlert[0][0][0] = Object.values(req.body)[2][0]
+  lineAlert[0][0][1] = Object.values(req.body)[2][1]
+  lineAlert[0][0][2] = Object.values(req.body)[2][2]
 
-  lineAlert[0][0][0] = Object.values(req.body)[3]
-  lineAlert[0][0][1] = Object.values(req.body)[4]
-  lineAlert[0][0][2] = Object.values(req.body)[5]
+  arrKenri[1][0][0]  = Object.values(req.body)[3][0] 
+  arrKenri[1][0][1]  = Object.values(req.body)[3][1] 
+  arrKenri[1][0][2]  = Object.values(req.body)[3][2] 
 
-  arrKenri[0][1][0]  = Object.values(req.body)[6]
-  arrKenri[0][1][1]  = Object.values(req.body)[7]
-  arrKenri[0][1][2]  = Object.values(req.body)[8]
+  lineAlert[1][0][0] = Object.values(req.body)[4][0]
+  lineAlert[1][0][1] = Object.values(req.body)[4][1]
+  lineAlert[1][0][2] = Object.values(req.body)[4][2]
 
-  lineAlert[0][1][0] = Object.values(req.body)[9]
-  lineAlert[0][1][1] = Object.values(req.body)[10]
-  lineAlert[0][1][2] = Object.values(req.body)[11]
+  arrKenri[0][1][0]  = Object.values(req.body)[5][0]
+  arrKenri[0][1][1]  = Object.values(req.body)[5][1]
+  arrKenri[0][1][2]  = Object.values(req.body)[5][2]
 
+  lineAlert[0][1][0] = Object.values(req.body)[6][0]
+  lineAlert[0][1][1] = Object.values(req.body)[6][1]
+  lineAlert[0][1][2] = Object.values(req.body)[6][2]
 
-  arrKenri[1][0][0]  = Object.values(req.body)[12]
-  arrKenri[1][0][1]  = Object.values(req.body)[13]
-  arrKenri[1][0][2]  = Object.values(req.body)[14]
+  arrKenri[1][1][0]  = Object.values(req.body)[7][0]
+  arrKenri[1][1][1]  = Object.values(req.body)[7][1]
+  arrKenri[1][1][2]  = Object.values(req.body)[7][2]
 
-  lineAlert[1][0][0] = Object.values(req.body)[15]
-  lineAlert[1][0][1] = Object.values(req.body)[16]
-  lineAlert[1][0][2] = Object.values(req.body)[17]
+  lineAlert[1][1][0] = Object.values(req.body)[8][0]
+  lineAlert[1][1][1] = Object.values(req.body)[8][1]
+  lineAlert[1][1][2] = Object.values(req.body)[8][2]
 
-  arrKenri[1][1][0]  = Object.values(req.body)[18]
-  arrKenri[1][1][1]  = Object.values(req.body)[19]
-  arrKenri[1][1][2]  = Object.values(req.body)[20]
-
-  lineAlert[1][1][0] = Object.values(req.body)[21]
-  lineAlert[1][1][1] = Object.values(req.body)[22]
-  lineAlert[1][1][2] = Object.values(req.body)[23]
-
-
-
-
+  console.error('DD-MM-YY',arrDDMMYY);
+  console.error('KenriC0', arrKenri[0][0]);
+  console.error('AlertC0',lineAlert[0][0]);
+  console.error('KenriP0', arrKenri[1][0]);
+  console.error('AlertP0',lineAlert[1][0]);
+  console.error('KenriC1', arrKenri[0][1]);
+  console.error('AlertC1',lineAlert[0][1]);
+  console.error('KenriP1', arrKenri[1][1]);
+  console.error('AlertP1',lineAlert[1][1]);
 
 
   //res.json(req.body);
 
+  writefile0(lineAlert,arrKenri,arrDDMMYY);
+
+  /*
   let lac0 = '';
   let lac1 = '';
   let kec0 = '';
@@ -297,6 +251,7 @@ app.post('/', function (req, res) {
     
   }
 
+  fs.writeFileSync(urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
   fs.writeFileSync(urlpath+"paramAlertC0.csv", lac0);
   fs.writeFileSync(urlpath+"paramAlertC1.csv", lac1);
   fs.writeFileSync(urlpath+"paramAlertP0.csv", lap0);
@@ -307,6 +262,7 @@ app.post('/', function (req, res) {
   fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
 
   console.error("")
+  console.error("write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
   console.error("write "+urlpath+"paramAlertC0.csv", lac0)
   console.error("write "+urlpath+"paramAlertC1.csv", lac1)
   console.error("write "+urlpath+"paramAlertP0.csv", lap0)
@@ -317,6 +273,8 @@ app.post('/', function (req, res) {
   console.error("write "+urlpath+"paramKenriP0.csv", kep0)
   console.error("write "+urlpath+"paramKenriP1.csv", kep1)
 
+  */
+  console.error('END app.post("\/")')
   res.redirect(301, urlpath)
 })
 
@@ -531,7 +489,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['lineAlertC'+i,lineAlert[0][j][i]],['lineCntC0',lineCnt.cntC0],['lineCntC1',lineCnt.cntC1],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
+        console.error([meigara],['AlertC'+i,lineAlert[0][j][i],'CntC0,1',lineCnt.cntC0,lineCnt.cntC1],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -663,7 +621,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['lineAlertP'+i,lineAlert[1][j][i]],['lineCntP0',lineCnt.cntP0],['lineCntP1',lineCnt.cntP1],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
+        console.error([meigara],['AlertP'+i,lineAlert[1][j][i],'CntP0,1',lineCnt.cntP0,lineCnt.cntP1],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -782,65 +740,130 @@ async function sendline(linemsg) {
   }
 }
 
-function makepath(arrDDMMYY,kenri_c_,kenri_p_) {
-  let arrRes = new Array(3);
-  for(let y = 0; y < 3; y++) {
-    arrRes[y] = new Array(2).fill('');
-  }
+function readfile0() {
+  console.error("")
+  console.error("Start readfile0()")
+  let lineAlert = [];
+  let arrKenri  = [];
+  let arrDDMMYY = [];
+  lineAlert[0] = [[0,0,0],[0,0,0]];//C ;
+  lineAlert[1] = [[0,0,0],[0,0,0]];//P ;
+  arrKenri[0]  = [[0,0,0],[0,0,0]];//C ;
+  arrKenri[1]  = [[0,0,0],[0,0,0]];//P ;
+  try{
+    let ac0 = fs.readFileSync(urlpath+"paramAlertC0.csv", 'utf-8');
+    let ac1 = fs.readFileSync(urlpath+"paramAlertC1.csv", 'utf-8');
+    let ap0 = fs.readFileSync(urlpath+"paramAlertP0.csv", 'utf-8');
+    let ap1 = fs.readFileSync(urlpath+"paramAlertP1.csv", 'utf-8');
+    let kc0 = fs.readFileSync(urlpath+"paramKenriC0.csv", 'utf-8');
+    let kc1 = fs.readFileSync(urlpath+"paramKenriC1.csv", 'utf-8');
+    let kp0 = fs.readFileSync(urlpath+"paramKenriP0.csv", 'utf-8');
+    let kp1 = fs.readFileSync(urlpath+"paramKenriP1.csv", 'utf-8');
+    let dmy = fs.readFileSync(urlpath+"paramDDMMYY.csv" , 'utf-8');
+    console.error([ac0],[ac1]);
+    console.error([ap0],[ap1]);
+    console.error([kc0],[kc1])
+    console.error([kp0],[kp1])
+    console.error([dmy])
+  
+  
+    let ac00  = ac0.split('\r')[0].split(',');
+    let ac01  = ac1.split('\r')[0].split(',');
+    let ap00  = ap0.split('\r')[0].split(',');
+    let ap01  = ap1.split('\r')[0].split(',');
+    lineAlert[0][0] = [ac00[0],ac00[1],ac00[2]];
+    lineAlert[0][1] = [ac01[0],ac01[1],ac01[2]];
+    lineAlert[1][0] = [ap00[0],ap00[1],ap00[2]];
+    lineAlert[1][1] = [ap01[0],ap01[1],ap01[2]];
+  
+  
+    let kc00 = kc0.split('\r')[0].split(',');
+    let kc01 = kc1.split('\r')[0].split(',');
+    let kp00 = kp0.split('\r')[0].split(',');
+    let kp01 = kp1.split('\r')[0].split(',');
+    arrKenri[0][0] = [kc00[0],kc00[1],kc00[2]];
+    arrKenri[0][1] = [kc01[0],kc01[1],kc01[2]];
+    arrKenri[1][0] = [kp00[0],kp00[1],kp00[2]];
+    arrKenri[1][1] = [kp01[0],kp01[1],kp01[2]];
+  
+  
+    let dmy1  = dmy.split('\r')[0].split(',');
+    arrDDMMYY[0]    = dmy1[0];
+    arrDDMMYY[1]    = dmy1[1];
 
-  for(let i = 0 ; i <= 2 ; i++){ 
-    for(let j = 0 ; j < arrDDMMYY.length ; j++){ 
-      //権利行使価格
-      let kenri_c = 0;//call
-      let kenri_p = 0;//put
-      
+    console.error(lineAlert[0][0],lineAlert[0][1])
+    console.error(lineAlert[1][0],lineAlert[1][1])
+    console.error(arrKenri[0][0],arrKenri[0][1])
+    console.error(arrKenri[1][0],arrKenri[1][1])
+    console.error(arrDDMMYY)
+  
+  }catch(e){
+    console.error(e)
+  }
+  
+  console.error("End readfile0()")
+  return [lineAlert,arrKenri,arrDDMMYY];
+}
+
+function writefile0(lineAlert,arrKenri,arrDDMMYY) {
+  console.error("")
+  console.error("Start writefile0(lineAlert,arrKenri,arrDDMMYY) ")
+  let lac0 = '';
+  let lac1 = '';
+  let kec0 = '';
+  let kec1 = '';
+  for(let j = 0 ; j <= 1 ; j++){
+    for(let i = 0 ; i <= 2 ; i++){
       if(j == 0){
-        kenri_c = kenri_c_     ;//call
-        kenri_p = kenri_p_     ;//put
+        lac0 += lineAlert[0][j][i] + ','
+        kec0 += arrKenri[0][j][i]  + ','  
       }else{
-        kenri_c = kenri_c_ + 1 ;//call
-        kenri_p = kenri_p_ - 1 ;//put
+        lac1 += lineAlert[0][j][i] + ','
+        kec1 += arrKenri[0][j][i]  + ','  
       }
-      
-      arrKenri_c[0] = kenri_c           ;//call
-      arrKenri_c[1] = arrKenri_c[0] - 1 ;
-      arrKenri_c[2] = arrKenri_c[0] + 1 ;
-      
-      arrKenri_p[0] = kenri_p           ;//put
-      arrKenri_p[1] = arrKenri_p[0] - 1 ;
-      arrKenri_p[2] = arrKenri_p[0] + 1 ;
-      //権利行使価格
-  
-      let meigara_c 
-          = arrDDMMYY[j].split('-')[2]  
-          + arrDDMMYY[j].split('-')[1]
-          + arrDDMMYY[j].split('-')[0]
-          + '-' + arrKenri_c[i];
-      let meigara_p 
-          = arrDDMMYY[j].split('-')[2]  
-          + arrDDMMYY[j].split('-')[1]
-          + arrDDMMYY[j].split('-')[0]
-          + '-' + arrKenri_p[i];
-  
-      if(i == 0){
-        meigara_c = 'C' + meigara_c + 'a' + j;
-        meigara_p = 'P' + meigara_p + 'a' + j;
-      }else{
-        meigara_c = 'C' + meigara_c;
-        meigara_p = 'P' + meigara_p;
-      }
-  
-      let PATHc = meigara_c ;
-      let PATHp = meigara_p ;
-
-      arrRes[i][j] = [PATHc,PATHp];
-  
-  
-      //console.error(['PATHc',PATHc]);
-      //console.error(['PATHp',PATHp]);
     }
+    
   }
 
-  //console.error(arrRes.flat());
-  return arrRes;
+  let lap0 = '';
+  let lap1 = '';
+  let kep0 = '';
+  let kep1 = '';
+  for(let j = 0 ; j <= 1 ; j++){
+    for(let i = 0 ; i <= 2 ; i++){
+      if(j == 0){
+        lap0 += lineAlert[1][j][i] + ','
+        kep0 += arrKenri[1][j][i]  + ','  
+      }else{
+        lap1 += lineAlert[1][j][i] + ','
+        kep1 += arrKenri[1][j][i]  + ','  
+
+      }
+    }
+    
+  }
+
+  fs.writeFileSync(urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
+  fs.writeFileSync(urlpath+"paramAlertC0.csv", lac0);
+  fs.writeFileSync(urlpath+"paramAlertC1.csv", lac1);
+  fs.writeFileSync(urlpath+"paramAlertP0.csv", lap0);
+  fs.writeFileSync(urlpath+"paramAlertP1.csv", lap1);
+  fs.writeFileSync(urlpath+"paramKenriC0.csv", kec0);
+  fs.writeFileSync(urlpath+"paramKenriC1.csv", kec1);
+  fs.writeFileSync(urlpath+"paramKenriP0.csv", kep0);
+  fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
+
+  console.error("write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
+  console.error("write "+urlpath+"paramAlertC0.csv", lac0)
+  console.error("write "+urlpath+"paramAlertC1.csv", lac1)
+  console.error("write "+urlpath+"paramAlertP0.csv", lap0)
+  console.error("write "+urlpath+"paramAlertP1.csv", lap1)
+
+  console.error("write "+urlpath+"paramKenriC0.csv", kec0)
+  console.error("write "+urlpath+"paramKenriC1.csv", kec1)
+  console.error("write "+urlpath+"paramKenriP0.csv", kep0)
+  console.error("write "+urlpath+"paramKenriP1.csv", kep1)
+
+  console.error("END writefile0(lineAlert,arrKenri,arrDDMMYY) ")
+
 }

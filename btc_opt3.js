@@ -145,15 +145,15 @@ app.get('/'+urlpath, (req, res) => {
   );
   console.error("")
   console.error("Start app.get()")
-  console.error('AlertC0 ' + lineAlert[0][0])
-  console.error('AlertC1 ' + lineAlert[0][1])
-  console.error('AlertP0 ' + lineAlert[1][0])
-  console.error('AlertP1 ' + lineAlert[1][1])
-  console.error('KenriC0 ' + arrKenri[0][0])
-  console.error('KenriC1 ' + arrKenri[0][1])
-  console.error('KenriP0 ' + arrKenri[1][0])
-  console.error('KenriP1 ' + arrKenri[1][1])
-  console.error('DD-MM-YY ' + arrDDMMYY)
+  console.error(['AlertC0 ' + lineAlert[0][0]])
+  console.error(['AlertC1 ' + lineAlert[0][1]])
+  console.error(['AlertP0 ' + lineAlert[1][0]])
+  console.error(['AlertP1 ' + lineAlert[1][1]])
+  console.error(['KenriC0 ' + arrKenri[0][0]])
+  console.error(['KenriC1 ' + arrKenri[0][1]])
+  console.error(['KenriP0 ' + arrKenri[1][0]])
+  console.error(['KenriP1 ' + arrKenri[1][1]])
+  console.error(['DD-MM-YY ' + arrDDMMYY])
   console.error("END app.get()")
 })
 
@@ -161,7 +161,7 @@ app.post('/', function (req, res) {
   console.error('')
   console.error('Start app.post("\/")')
   Object.keys(req.body).forEach((key,i) => {
-    console.error('i:'+i,'key:'+key ,'value:'+req.body[key]);
+    console.error(['i:'+i,'key:'+key ,'value:'+req.body[key]]);
   });
   console.error('');
 
@@ -200,80 +200,21 @@ app.post('/', function (req, res) {
   lineAlert[1][1][1] = Object.values(req.body)[8][1]
   lineAlert[1][1][2] = Object.values(req.body)[8][2]
 
-  console.error('DD-MM-YY',arrDDMMYY);
-  console.error('KenriC0', arrKenri[0][0]);
-  console.error('AlertC0',lineAlert[0][0]);
-  console.error('KenriP0', arrKenri[1][0]);
-  console.error('AlertP0',lineAlert[1][0]);
-  console.error('KenriC1', arrKenri[0][1]);
-  console.error('AlertC1',lineAlert[0][1]);
-  console.error('KenriP1', arrKenri[1][1]);
-  console.error('AlertP1',lineAlert[1][1]);
+  console.error(['DD-MM-YY',arrDDMMYY]);
+  console.error(['KenriC0', arrKenri[0][0]]);
+  console.error(['AlertC0',lineAlert[0][0]]);
+  console.error(['KenriP0', arrKenri[1][0]]);
+  console.error(['AlertP0',lineAlert[1][0]]);
+  console.error(['KenriC1', arrKenri[0][1]]);
+  console.error(['AlertC1',lineAlert[0][1]]);
+  console.error(['KenriP1', arrKenri[1][1]]);
+  console.error(['AlertP1',lineAlert[1][1]]);
 
 
   //res.json(req.body);
 
   writefile0(lineAlert,arrKenri,arrDDMMYY);
 
-  /*
-  let lac0 = '';
-  let lac1 = '';
-  let kec0 = '';
-  let kec1 = '';
-  for(let j = 0 ; j <= 1 ; j++){
-    for(let i = 0 ; i <= 2 ; i++){
-      if(j == 0){
-        lac0 += lineAlert[0][j][i] + ','
-        kec0 += arrKenri[0][j][i]  + ','  
-      }else{
-        lac1 += lineAlert[0][j][i] + ','
-        kec1 += arrKenri[0][j][i]  + ','  
-      }
-    }
-    
-  }
-
-  let lap0 = '';
-  let lap1 = '';
-  let kep0 = '';
-  let kep1 = '';
-  for(let j = 0 ; j <= 1 ; j++){
-    for(let i = 0 ; i <= 2 ; i++){
-      if(j == 0){
-        lap0 += lineAlert[1][j][i] + ','
-        kep0 += arrKenri[1][j][i]  + ','  
-      }else{
-        lap1 += lineAlert[1][j][i] + ','
-        kep1 += arrKenri[1][j][i]  + ','  
-
-      }
-    }
-    
-  }
-
-  fs.writeFileSync(urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
-  fs.writeFileSync(urlpath+"paramAlertC0.csv", lac0);
-  fs.writeFileSync(urlpath+"paramAlertC1.csv", lac1);
-  fs.writeFileSync(urlpath+"paramAlertP0.csv", lap0);
-  fs.writeFileSync(urlpath+"paramAlertP1.csv", lap1);
-  fs.writeFileSync(urlpath+"paramKenriC0.csv", kec0);
-  fs.writeFileSync(urlpath+"paramKenriC1.csv", kec1);
-  fs.writeFileSync(urlpath+"paramKenriP0.csv", kep0);
-  fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
-
-  console.error("")
-  console.error("write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
-  console.error("write "+urlpath+"paramAlertC0.csv", lac0)
-  console.error("write "+urlpath+"paramAlertC1.csv", lac1)
-  console.error("write "+urlpath+"paramAlertP0.csv", lap0)
-  console.error("write "+urlpath+"paramAlertP1.csv", lap1)
-
-  console.error("write "+urlpath+"paramKenriC0.csv", kec0)
-  console.error("write "+urlpath+"paramKenriC1.csv", kec1)
-  console.error("write "+urlpath+"paramKenriP0.csv", kep0)
-  console.error("write "+urlpath+"paramKenriP1.csv", kep1)
-
-  */
   console.error('END app.post("\/")')
   res.redirect(301, urlpath)
 })
@@ -853,16 +794,15 @@ function writefile0(lineAlert,arrKenri,arrDDMMYY) {
   fs.writeFileSync(urlpath+"paramKenriP0.csv", kep0);
   fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
 
-  console.error("write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]);
-  console.error("write "+urlpath+"paramAlertC0.csv", lac0)
-  console.error("write "+urlpath+"paramAlertC1.csv", lac1)
-  console.error("write "+urlpath+"paramAlertP0.csv", lap0)
-  console.error("write "+urlpath+"paramAlertP1.csv", lap1)
-
-  console.error("write "+urlpath+"paramKenriC0.csv", kec0)
-  console.error("write "+urlpath+"paramKenriC1.csv", kec1)
-  console.error("write "+urlpath+"paramKenriP0.csv", kep0)
-  console.error("write "+urlpath+"paramKenriP1.csv", kep1)
+  console.error(["write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
+  console.error(["write "+urlpath+"paramAlertC0.csv", lac0])
+  console.error(["write "+urlpath+"paramAlertC1.csv", lac1])
+  console.error(["write "+urlpath+"paramAlertP0.csv", lap0])
+  console.error(["write "+urlpath+"paramAlertP1.csv", lap1])
+  console.error(["write "+urlpath+"paramKenriC0.csv", kec0])
+  console.error(["write "+urlpath+"paramKenriC1.csv", kec1])
+  console.error(["write "+urlpath+"paramKenriP0.csv", kep0])
+  console.error(["write "+urlpath+"paramKenriP1.csv", kep1])
 
   console.error("END writefile0(lineAlert,arrKenri,arrDDMMYY) ")
 

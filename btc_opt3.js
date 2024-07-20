@@ -77,6 +77,9 @@ arrDDMMYY = arrResult[2];
 
 
 app.get('/'+urlpath, (req, res) => {
+  console.error("")
+  console.error("Start app.get()")
+
   const files  = fs.readdirSync(urlpath);
   const filter = files.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
   let pathtext ='';
@@ -84,76 +87,18 @@ app.get('/'+urlpath, (req, res) => {
     if(filter[i].indexOf('down') == -1){
       pathtext += '<br> <a href="' + filter[i] + '">' + filter[i] + '</a>\n';
       if(i == 2 || i == 5 || i == 8){
-        pathtext += '<br>'
+        //pathtext += '<br>'
       }
     }  
   }
+
+  let htmltag = maketag(lineAlert,arrKenri,arrDDMMYY);
   
   res.send(
     'click!'
     + pathtext 
-    + '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
-    + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
-    + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
-    + '<br> <form action="/" method="post">'
-      + '<br>パラメータ設定　※注意：ＳＱ日以外は、すべて数値で入力してください！'
-      
-      + '<br>ＳＱ日０ : ' 
-      + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[0]+'">'
-      + '<br>ＣＡＬＬ 権利行使価格 : '
-      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
-      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][1]+'">'
-      + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][2]+'">'
-      + ' Alert '
-      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
-      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][1]+'">'
-      + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][2]+'">'
-
-      + '<br>ＰＵＴ　 権利行使価格 : '
-      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
-      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][1]+'">'
-      + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][2]+'">'
-      + ' Alert '
-      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
-      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][1]+'">'
-      + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][2]+'">'
-
-      + '<br>ＳＱ日１ : '
-      + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[1]+'">'
-      + '<br>ＣＡＬＬ 権利行使価格 : '
-      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
-      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][1]+'">'
-      + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][2]+'">'
-      + ' Alert '
-      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
-      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][1]+'">'
-      + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][2]+'">'
-
-
-      + '<br>ＰＵＴ　 権利行使価格 : '
-      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
-      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][1]+'">'
-      + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][2]+'">'
-      + ' Alert '
-      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
-      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][1]+'">'
-      + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][2]+'">'
-
-      
-      + '<br><input type="submit" value="送信！">'
-      + '</form>'
+    + htmltag
   );
-  console.error("")
-  console.error("Start app.get()")
-  console.error(['AlertC0 ' + lineAlert[0][0]])
-  console.error(['AlertC1 ' + lineAlert[0][1]])
-  console.error(['AlertP0 ' + lineAlert[1][0]])
-  console.error(['AlertP1 ' + lineAlert[1][1]])
-  console.error(['KenriC0 ' + arrKenri[0][0]])
-  console.error(['KenriC1 ' + arrKenri[0][1]])
-  console.error(['KenriP0 ' + arrKenri[1][0]])
-  console.error(['KenriP1 ' + arrKenri[1][1]])
-  console.error(['DD-MM-YY ' + arrDDMMYY])
   console.error("END app.get()")
 })
 
@@ -163,57 +108,8 @@ app.post('/', function (req, res) {
   Object.keys(req.body).forEach((key,i) => {
     console.error(['i:'+i,'key:'+key ,'value:'+req.body[key]]);
   });
-  console.error('');
 
-  arrDDMMYY[0] = Object.values(req.body)[0][0];
-  arrDDMMYY[1] = Object.values(req.body)[0][1];
-  
-  arrKenri[0][0][0]  = Object.values(req.body)[1][0]
-  arrKenri[0][0][1]  = Object.values(req.body)[1][1]
-  arrKenri[0][0][2]  = Object.values(req.body)[1][2]
-
-  lineAlert[0][0][0] = Object.values(req.body)[2][0]
-  lineAlert[0][0][1] = Object.values(req.body)[2][1]
-  lineAlert[0][0][2] = Object.values(req.body)[2][2]
-
-  arrKenri[1][0][0]  = Object.values(req.body)[3][0] 
-  arrKenri[1][0][1]  = Object.values(req.body)[3][1] 
-  arrKenri[1][0][2]  = Object.values(req.body)[3][2] 
-
-  lineAlert[1][0][0] = Object.values(req.body)[4][0]
-  lineAlert[1][0][1] = Object.values(req.body)[4][1]
-  lineAlert[1][0][2] = Object.values(req.body)[4][2]
-
-  arrKenri[0][1][0]  = Object.values(req.body)[5][0]
-  arrKenri[0][1][1]  = Object.values(req.body)[5][1]
-  arrKenri[0][1][2]  = Object.values(req.body)[5][2]
-
-  lineAlert[0][1][0] = Object.values(req.body)[6][0]
-  lineAlert[0][1][1] = Object.values(req.body)[6][1]
-  lineAlert[0][1][2] = Object.values(req.body)[6][2]
-
-  arrKenri[1][1][0]  = Object.values(req.body)[7][0]
-  arrKenri[1][1][1]  = Object.values(req.body)[7][1]
-  arrKenri[1][1][2]  = Object.values(req.body)[7][2]
-
-  lineAlert[1][1][0] = Object.values(req.body)[8][0]
-  lineAlert[1][1][1] = Object.values(req.body)[8][1]
-  lineAlert[1][1][2] = Object.values(req.body)[8][2]
-
-  console.error(['DD-MM-YY',arrDDMMYY]);
-  console.error(['KenriC0', arrKenri[0][0]]);
-  console.error(['AlertC0',lineAlert[0][0]]);
-  console.error(['KenriP0', arrKenri[1][0]]);
-  console.error(['AlertP0',lineAlert[1][0]]);
-  console.error(['KenriC1', arrKenri[0][1]]);
-  console.error(['AlertC1',lineAlert[0][1]]);
-  console.error(['KenriP1', arrKenri[1][1]]);
-  console.error(['AlertP1',lineAlert[1][1]]);
-
-
-  //res.json(req.body);
-
-  writefile0(lineAlert,arrKenri,arrDDMMYY);
+  writefile0(lineAlert,arrKenri,arrDDMMYY,req);
 
   console.error('END app.post("\/")')
   res.redirect(301, urlpath)
@@ -701,11 +597,6 @@ function readfile0() {
     let kp0 = fs.readFileSync(urlpath+"paramKenriP0.csv", 'utf-8');
     let kp1 = fs.readFileSync(urlpath+"paramKenriP1.csv", 'utf-8');
     let dmy = fs.readFileSync(urlpath+"paramDDMMYY.csv" , 'utf-8');
-    console.error([ac0],[ac1]);
-    console.error([ap0],[ap1]);
-    console.error([kc0],[kc1])
-    console.error([kp0],[kp1])
-    console.error([dmy])
   
   
     let ac00  = ac0.split('\r')[0].split(',');
@@ -732,11 +623,18 @@ function readfile0() {
     arrDDMMYY[0]    = dmy1[0];
     arrDDMMYY[1]    = dmy1[1];
 
-    console.error(lineAlert[0][0],lineAlert[0][1])
-    console.error(lineAlert[1][0],lineAlert[1][1])
-    console.error(arrKenri[0][0],arrKenri[0][1])
-    console.error(arrKenri[1][0],arrKenri[1][1])
-    console.error(arrDDMMYY)
+
+
+    console.error(['read paramAlertC0.csv',ac0],' => ',['AlertC0',lineAlert[0][0]]);
+    console.error(['read paramAlertC1.csv',ac1],' => ',['AlertC1',lineAlert[0][1]]);
+    console.error(['read paramAlertP0.csv',ap0],' => ',['AlertP0',lineAlert[1][0]]);
+    console.error(['read paramAlertC1.csv',ap1],' => ',['AlertP1',lineAlert[1][1]]);
+    console.error(['read paramKenriC0.csv',kc0],' => ',['KenriC0',arrKenri[0][0]]);
+    console.error(['read paramKenriC1.csv',kc1],' => ',['KenriC1',arrKenri[0][1]]);
+    console.error(['read paramKenriP0.csv',kp0],' => ',['KenriP0',arrKenri[1][0]]);
+    console.error(['read paramKenriP1.csv',kp1],' => ',['KenriP1',arrKenri[1][1]]);
+    console.error(['read paramDDMMYY.csv ',dmy],' => ',['DDMMYY',arrDDMMYY]);
+
   
   }catch(e){
     console.error(e)
@@ -746,9 +644,46 @@ function readfile0() {
   return [lineAlert,arrKenri,arrDDMMYY];
 }
 
-function writefile0(lineAlert,arrKenri,arrDDMMYY) {
-  console.error("")
-  console.error("Start writefile0(lineAlert,arrKenri,arrDDMMYY) ")
+function writefile0(lineAlert,arrKenri,arrDDMMYY,req) {
+  console.error(" Start writefile0(lineAlert,arrKenri,arrDDMMYY,req) ")
+
+  arrDDMMYY[0] = Object.values(req.body)[0][0];
+  arrDDMMYY[1] = Object.values(req.body)[0][1];
+  
+  arrKenri[0][0][0]  = Object.values(req.body)[1][0]
+  arrKenri[0][0][1]  = Object.values(req.body)[1][1]
+  arrKenri[0][0][2]  = Object.values(req.body)[1][2]
+
+  lineAlert[0][0][0] = Object.values(req.body)[2][0]
+  lineAlert[0][0][1] = Object.values(req.body)[2][1]
+  lineAlert[0][0][2] = Object.values(req.body)[2][2]
+
+  arrKenri[1][0][0]  = Object.values(req.body)[3][0] 
+  arrKenri[1][0][1]  = Object.values(req.body)[3][1] 
+  arrKenri[1][0][2]  = Object.values(req.body)[3][2] 
+
+  lineAlert[1][0][0] = Object.values(req.body)[4][0]
+  lineAlert[1][0][1] = Object.values(req.body)[4][1]
+  lineAlert[1][0][2] = Object.values(req.body)[4][2]
+
+  arrKenri[0][1][0]  = Object.values(req.body)[5][0]
+  arrKenri[0][1][1]  = Object.values(req.body)[5][1]
+  arrKenri[0][1][2]  = Object.values(req.body)[5][2]
+
+  lineAlert[0][1][0] = Object.values(req.body)[6][0]
+  lineAlert[0][1][1] = Object.values(req.body)[6][1]
+  lineAlert[0][1][2] = Object.values(req.body)[6][2]
+
+  arrKenri[1][1][0]  = Object.values(req.body)[7][0]
+  arrKenri[1][1][1]  = Object.values(req.body)[7][1]
+  arrKenri[1][1][2]  = Object.values(req.body)[7][2]
+
+  lineAlert[1][1][0] = Object.values(req.body)[8][0]
+  lineAlert[1][1][1] = Object.values(req.body)[8][1]
+  lineAlert[1][1][2] = Object.values(req.body)[8][2]
+
+
+
   let lac0 = '';
   let lac1 = '';
   let kec0 = '';
@@ -794,16 +729,89 @@ function writefile0(lineAlert,arrKenri,arrDDMMYY) {
   fs.writeFileSync(urlpath+"paramKenriP0.csv", kep0);
   fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
 
-  console.error(["write "+urlpath+"paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
-  console.error(["write "+urlpath+"paramAlertC0.csv", lac0])
-  console.error(["write "+urlpath+"paramAlertC1.csv", lac1])
-  console.error(["write "+urlpath+"paramAlertP0.csv", lap0])
-  console.error(["write "+urlpath+"paramAlertP1.csv", lap1])
-  console.error(["write "+urlpath+"paramKenriC0.csv", kec0])
-  console.error(["write "+urlpath+"paramKenriC1.csv", kec1])
-  console.error(["write "+urlpath+"paramKenriP0.csv", kep0])
-  console.error(["write "+urlpath+"paramKenriP1.csv", kep1])
 
-  console.error("END writefile0(lineAlert,arrKenri,arrDDMMYY) ")
+  console.error(['DD-MM-YY',arrDDMMYY],'=>',["write paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
+  console.error(['AlertC0',lineAlert[0][0]],'=>',["write paramAlertC0.csv", lac0])
+  console.error(['AlertC1',lineAlert[0][1]],'=>',["write paramAlertC1.csv", lac1])
+  console.error(['AlertP0',lineAlert[1][0]],'=>',["write paramAlertP0.csv", lap0])
+  console.error(['AlertP1',lineAlert[1][1]],'=>',["write paramAlertP1.csv", lap1])
+  console.error(['KenriC0', arrKenri[0][0]],'=>',["write paramKenriC0.csv", kec0])
+  console.error(['KenriC1', arrKenri[0][1]],'=>',["write paramKenriC1.csv", kec1])
+  console.error(['KenriP0', arrKenri[1][0]],'=>',["write paramKenriP0.csv", kep0])
+  console.error(['KenriP1', arrKenri[1][1]],'=>',["write paramKenriP1.csv", kep1])
 
+  console.error(" END writefile0(lineAlert,arrKenri,arrDDMMYY,req) ")
+
+}
+
+function maketag(lineAlert,arrKenri,arrDDMMYY){
+  console.error(" Start maketag(lineAlert,arrKenri,arrDDMMYY) ")
+
+  let htmltag =
+    '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
+    + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
+    + '<br> <form action="/" method="post">'
+    + '<br>パラメータ設定　※注意：ＳＱ日以外は、すべて数値で入力してください！'
+    
+    + '<br>ＳＱ日０ : ' 
+    + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[0]+'">'
+    + '<br>ＣＡＬＬ 権利行使価格 : '
+    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
+    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][1]+'">'
+    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][2]+'">'
+    + ' Alert '
+    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
+    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][1]+'">'
+    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][2]+'">'
+
+    + '<br>ＰＵＴ　 権利行使価格 : '
+    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
+    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][1]+'">'
+    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][2]+'">'
+    + ' Alert '
+    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
+    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][1]+'">'
+    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][2]+'">'
+
+    + '<br>ＳＱ日１ : '
+    + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[1]+'">'
+    + '<br>ＣＡＬＬ 権利行使価格 : '
+    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
+    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][1]+'">'
+    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][2]+'">'
+    + ' Alert '
+    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
+    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][1]+'">'
+    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][2]+'">'
+
+
+    + '<br>ＰＵＴ　 権利行使価格 : '
+    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
+    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][1]+'">'
+    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][2]+'">'
+    + ' Alert '
+    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
+    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][1]+'">'
+    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][2]+'">'
+
+    
+    + '<br><input type="submit" value="送信！">'
+    + '</form>'
+    ;
+
+    console.error(['AlertC0 ' + lineAlert[0][0]])
+    console.error(['AlertC1 ' + lineAlert[0][1]])
+    console.error(['AlertP0 ' + lineAlert[1][0]])
+    console.error(['AlertP1 ' + lineAlert[1][1]])
+    console.error(['KenriC0 ' + arrKenri[0][0]])
+    console.error(['KenriC1 ' + arrKenri[0][1]])
+    console.error(['KenriP0 ' + arrKenri[1][0]])
+    console.error(['KenriP1 ' + arrKenri[1][1]])
+    console.error(['DD-MM-YY ' + arrDDMMYY])
+  
+
+    console.error(" END maketag(lineAlert,arrKenri,arrDDMMYY) ")
+  
+    return htmltag;
 }

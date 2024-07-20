@@ -16,7 +16,6 @@ const fs = require( 'fs' );
 require('dotenv').config();
 let urlpath = 'public/';//'../Dropbox/Attachments/'
 //let urlpath = '../Dropbox/Attachments/';
-//let urlpath = '../aaa/bbb/';
 let express = require("express");
 let app = express();
 let server = app.listen(8080, function(){
@@ -625,15 +624,15 @@ function readfile0() {
 
 
 
-    console.error(['read paramAlertC0.csv',ac0],' => ',['AlertC0',lineAlert[0][0]]);
-    console.error(['read paramAlertC1.csv',ac1],' => ',['AlertC1',lineAlert[0][1]]);
-    console.error(['read paramAlertP0.csv',ap0],' => ',['AlertP0',lineAlert[1][0]]);
-    console.error(['read paramAlertC1.csv',ap1],' => ',['AlertP1',lineAlert[1][1]]);
-    console.error(['read paramKenriC0.csv',kc0],' => ',['KenriC0',arrKenri[0][0]]);
-    console.error(['read paramKenriC1.csv',kc1],' => ',['KenriC1',arrKenri[0][1]]);
-    console.error(['read paramKenriP0.csv',kp0],' => ',['KenriP0',arrKenri[1][0]]);
-    console.error(['read paramKenriP1.csv',kp1],' => ',['KenriP1',arrKenri[1][1]]);
-    console.error(['read paramDDMMYY.csv ',dmy],' => ',['DDMMYY',arrDDMMYY]);
+    console.error(['read paramAlertC0.csv',ac0],'  =>',['AlertC0',lineAlert[0][0]]);
+    console.error(['read paramAlertC1.csv',ac1],'  =>',['AlertC1',lineAlert[0][1]]);
+    console.error(['read paramAlertP0.csv',ap0],'  =>',['AlertP0',lineAlert[1][0]]);
+    console.error(['read paramAlertC1.csv',ap1],'  =>',['AlertP1',lineAlert[1][1]]);
+    console.error(['read paramKenriC0.csv',kc0],'        =>',['KenriC0',arrKenri[0][0]]);
+    console.error(['read paramKenriC1.csv',kc1],'        =>',['KenriC1',arrKenri[0][1]]);
+    console.error(['read paramKenriP0.csv',kp0],'        =>',['KenriP0',arrKenri[1][0]]);
+    console.error(['read paramKenriP1.csv',kp1],'        =>',['KenriP1',arrKenri[1][1]]);
+    console.error(['read paramDDMMYY.csv ',dmy],'=>',['DDMMYY ',arrDDMMYY]);
 
   
   }catch(e){
@@ -731,14 +730,14 @@ function writefile0(lineAlert,arrKenri,arrDDMMYY,req) {
 
 
   console.error(['DD-MM-YY',arrDDMMYY],'=>',["write paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
-  console.error(['AlertC0',lineAlert[0][0]],'=>',["write paramAlertC0.csv", lac0])
-  console.error(['AlertC1',lineAlert[0][1]],'=>',["write paramAlertC1.csv", lac1])
-  console.error(['AlertP0',lineAlert[1][0]],'=>',["write paramAlertP0.csv", lap0])
-  console.error(['AlertP1',lineAlert[1][1]],'=>',["write paramAlertP1.csv", lap1])
-  console.error(['KenriC0', arrKenri[0][0]],'=>',["write paramKenriC0.csv", kec0])
-  console.error(['KenriC1', arrKenri[0][1]],'=>',["write paramKenriC1.csv", kec1])
-  console.error(['KenriP0', arrKenri[1][0]],'=>',["write paramKenriP0.csv", kep0])
-  console.error(['KenriP1', arrKenri[1][1]],'=>',["write paramKenriP1.csv", kep1])
+  console.error(['KenriC0', arrKenri[0][0]],'       =>',["write paramKenriC0.csv", kec0])
+  console.error(['AlertC0',lineAlert[0][0]],' =>',["write paramAlertC0.csv", lac0])
+  console.error(['KenriP0', arrKenri[1][0]],'       =>',["write paramKenriP0.csv", kep0])
+  console.error(['AlertP0',lineAlert[1][0]],' =>',["write paramAlertP0.csv", lap0])
+  console.error(['KenriC1', arrKenri[0][1]],'       =>',["write paramKenriC1.csv", kec1])
+  console.error(['AlertC1',lineAlert[0][1]],' =>',["write paramAlertC1.csv", lac1])
+  console.error(['KenriP1', arrKenri[1][1]],'       =>',["write paramKenriP1.csv", kep1])
+  console.error(['AlertP1',lineAlert[1][1]],' =>',["write paramAlertP1.csv", lap1])
 
   console.error(" END writefile0(lineAlert,arrKenri,arrDDMMYY,req) ")
 
@@ -800,15 +799,15 @@ function maketag(lineAlert,arrKenri,arrDDMMYY){
     + '</form>'
     ;
 
-    console.error(['AlertC0 ' + lineAlert[0][0]])
-    console.error(['AlertC1 ' + lineAlert[0][1]])
-    console.error(['AlertP0 ' + lineAlert[1][0]])
-    console.error(['AlertP1 ' + lineAlert[1][1]])
-    console.error(['KenriC0 ' + arrKenri[0][0]])
-    console.error(['KenriC1 ' + arrKenri[0][1]])
-    console.error(['KenriP0 ' + arrKenri[1][0]])
-    console.error(['KenriP1 ' + arrKenri[1][1]])
     console.error(['DD-MM-YY ' + arrDDMMYY])
+    console.error(['KenriC0 ' + arrKenri[0][0]])
+    console.error(['AlertC0 ' + lineAlert[0][0]])
+    console.error(['KenriP0 ' + arrKenri[1][0]])
+    console.error(['AlertP0 ' + lineAlert[1][0]])
+    console.error(['KenriC1 ' + arrKenri[0][1]])
+    console.error(['AlertC1 ' + lineAlert[0][1]])
+    console.error(['KenriP1 ' + arrKenri[1][1]])
+    console.error(['AlertP1 ' + lineAlert[1][1]])
   
 
     console.error(" END maketag(lineAlert,arrKenri,arrDDMMYY) ")

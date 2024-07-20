@@ -14,12 +14,13 @@
 
 const fs = require( 'fs' );
 require('dotenv').config();
-let urlpath = 'public/';//'../Dropbox/Attachments/'
-//let urlpath = '../Dropbox/Attachments/';
+let urlpath = '../Dropbox/Attachments/'
+//let urlpath = 'public/';//'../Dropbox/Attachments/'
 let express = require("express");
 let app = express();
+
 let server = app.listen(8080, function(){
-    console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
+  console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
 //app.use('~/aaa/bbb', express.static(__dirname + '~/aaa/bbb'));
 //app.use('/public', express.static(__dirname + '/public'));
@@ -57,7 +58,11 @@ arrDDMMYY[0] = '26-07-24';
 arrDDMMYY[1] = '02-08-24';
 
 let cnt = -1;
-let lineCnt = {cntC0:0 , cntC1:0 , cntP0:0 ,cntP1:0};
+let lineCnt = {cntC00:0 ,cntC01:0 ,cntC02:0 
+              ,cntC10:0 ,cntC11:0 ,cntC12:0 
+              ,cntP00:0 ,cntP01:0 ,cntP02:0 
+              ,cntP10:0 ,cntP11:0 ,cntP12:0};
+//console.error(lineCnt)
 
 
 let lineAlert = [];//5750;
@@ -325,7 +330,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['AlertC'+i,lineAlert[0][j][i],'CntC0,1',lineCnt.cntC0,lineCnt.cntC1],["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
+        console.error([meigara],['AlertC'+i,lineAlert[0][j][i]
+          ,'CntC',lineCnt.cntC00,lineCnt.cntC01,lineCnt.cntC02,lineCnt.cntC10,lineCnt.cntC11,lineCnt.cntC12]
+          ,["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -384,26 +391,42 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //console.error('lineAlert '+lineAlert[0][j][i]) j==日
 
         let lineCount = 0;
-        if(j == 0){
-          lineCount = lineCnt.cntC0
-        }else{
-          lineCount = lineCnt.cntC1
+        if(      j == 0 && i == 0){
+          lineCount = lineCnt.cntC00
+        }else if(j == 0 && i == 1){
+          lineCount = lineCnt.cntC01
+        }else if(j == 0 && i == 2){
+          lineCount = lineCnt.cntC02
+        }else if(j == 1 && i == 0){
+          lineCount = lineCnt.cntC10
+        }else if(j == 1 && i == 1){
+          lineCount = lineCnt.cntC11
+        }else if(j == 1 && i == 2){
+          lineCount = lineCnt.cntC12
         }
     
-        if(i == 0 && sell > lineAlert[0][j][i] && lineCount < 5){
+        if(sell > lineAlert[0][j][i] && lineCount < 5){
           let linemsg = '[SELL Alert]>' + lineAlert[0][j][i] + '\n\n'
                       + BTC_C_line 
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
                       + '\n' + ymd
-                      + '\nCount:' + lineCount;
+                      + '\nCount:' + (lineCount+1);
           await sendline(linemsg);
           console.error(linemsg);
           lineCount++;
-          if(j == 0){
-            lineCnt.cntC0 = lineCount;
-          }else{
-            lineCnt.cntC1 = lineCount;
+          if(      j == 0 && i ==0){
+            lineCnt.cntC00 = lineCount;
+          }else if(j == 0 && i ==1){
+            lineCnt.cntC01 = lineCount;
+          }else if(j == 0 && i ==2){
+            lineCnt.cntC02 = lineCount;
+          }else if(j == 1 && i ==0){
+            lineCnt.cntC10 = lineCount;
+          }else if(j == 1 && i ==1){
+            lineCnt.cntC11 = lineCount;
+          }else if(j == 1 && i ==2){
+            lineCnt.cntC12 = lineCount;
           }
         }
 
@@ -457,7 +480,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['AlertP'+i,lineAlert[1][j][i],'CntP0,1',lineCnt.cntP0,lineCnt.cntP1],["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
+        console.error([meigara],['AlertP'+i,lineAlert[1][j][i]
+          ,'CntP',lineCnt.cntP00,lineCnt.cntP01,lineCnt.cntP02,lineCnt.cntP10,lineCnt.cntP11,lineCnt.cntP12]
+          ,["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -514,26 +539,42 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         await page.waitForTimeout(500);
 
         let lineCount = 0;
-        if(j == 0){
-          lineCount = lineCnt.cntP0
-        }else{
-          lineCount = lineCnt.cntP1
+        if(      j == 0 && i == 0){
+          lineCount = lineCnt.cntP00
+        }else if(j == 0 && i == 1){
+          lineCount = lineCnt.cntP01
+        }else if(j == 0 && i == 2){
+          lineCount = lineCnt.cntP02
+        }else if(j == 1 && i == 0){
+          lineCount = lineCnt.cntP10
+        }else if(j == 1 && i == 1){
+          lineCount = lineCnt.cntP11
+        }else if(j == 1 && i == 2){
+          lineCount = lineCnt.cntP12
         }
 
-        if(i == 0 && sell > lineAlert[1][j][i] && lineCount < 5){
+        if(sell > lineAlert[1][j][i] && lineCount < 5){
           let linemsg = '[SELL Alert]>' + lineAlert[1][j][i] + '\n\n'
                       + BTC_P_line
                       + '\n[Sell]:' + sell 
                       + '\n[原資産]:' + genshi 
                       + '\n' + ymd
-                      + '\nCount:' + lineCount;
+                      + '\nCount:' + (lineCount+1);
           await sendline(linemsg);
           console.error(linemsg);
           lineCount++;
-          if(j == 0){
-            lineCnt.cntP0 = lineCount;
-          }else{
-            lineCnt.cntP1 = lineCount;
+          if(      j == 0 && i ==0){
+            lineCnt.cntP00 = lineCount;
+          }else if(j == 0 && i ==1){
+            lineCnt.cntP01 = lineCount;
+          }else if(j == 0 && i ==2){
+            lineCnt.cntP02 = lineCount;
+          }else if(j == 1 && i ==0){
+            lineCnt.cntP10 = lineCount;
+          }else if(j == 1 && i ==1){
+            lineCnt.cntP11 = lineCount;
+          }else if(j == 1 && i ==2){
+            lineCnt.cntP12 = lineCount;
           }
         }
     

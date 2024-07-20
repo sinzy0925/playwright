@@ -14,8 +14,8 @@
 
 const fs = require( 'fs' );
 require('dotenv').config();
-let urlpath = '../Dropbox/Attachments/'
-//let urlpath = 'public/';//'../Dropbox/Attachments/'
+//let urlpath = '../Dropbox/Attachments/'
+let urlpath = 'public/';//'../Dropbox/Attachments/'
 let express = require("express");
 let app = express();
 
@@ -89,18 +89,25 @@ app.get('/'+urlpath, (req, res) => {
   let pathtext ='';
   for(let i = 0 ; i < filter.length ; i++){
     if(filter[i].indexOf('down') == -1){
-      pathtext += '<br> <a href="' + filter[i] + '">' + filter[i] + '</a>\n';
-      if(i == 2 || i == 5 || i == 8){
-        //pathtext += '<br>'
+      if(i > 0 ){
+        if(filter[i-1].slice(0,1) != filter[i].slice(0,1)){
+          pathtext += '<br>';
+        }
       }
+    if(i == 0){
+      pathtext += '     <a href="' + filter[i] + '">' + filter[i] + '</a>\n';
+    }else{
+      pathtext += '<br> <a href="' + filter[i] + '">' + filter[i] + '</a>\n';
+    }
+
     }  
   }
+  
 
   let htmltag = maketag(lineAlert,arrKenri,arrDDMMYY);
   
   res.send(
-    'click!'
-    + pathtext 
+    pathtext 
     + htmltag
   );
   console.error("END app.get()")
@@ -299,17 +306,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     let BTC_C_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_c[i] + '000[C]';
 
 
-    meigara = arrDDMMYY[j].split('-')[2]  
+    meigara = 'C'
+            + arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_c[i];
 
+
+  /*          
     if(i == 0){
       meigara = 'C' + meigara + 'a' + j;
     }else{
       meigara = 'C' + meigara;
     }
-
+  */
     PATH = urlpath//'../Dropbox/Attachments/' 
          + meigara
          + '.html';
@@ -448,17 +458,18 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     let BTC_P      = dd + mm        + yy + '-' + arrKenri_p[i] ;
     let BTC_P_line = 'BTC-Options\n' + arrDDMMYY[j] + '\n-' + arrKenri_p[i] + '000[P]';
     
-    meigara = arrDDMMYY[j].split('-')[2]  
+    meigara = 'P'
+            + arrDDMMYY[j].split('-')[2]  
             + arrDDMMYY[j].split('-')[1]
             + arrDDMMYY[j].split('-')[0]
             + '-' + arrKenri_p[i];
-
+  /*
     if(i == 2){
       meigara = 'P' + meigara + 'a' + j;
     }else{
       meigara = 'P' + meigara;
     }
-
+  */
     PATH = urlpath//'../Dropbox/Attachments/' 
          + meigara
          + '.html';
@@ -788,11 +799,12 @@ function maketag(lineAlert,arrKenri,arrDDMMYY){
   console.error(" Start maketag(lineAlert,arrKenri,arrDDMMYY) ")
 
   let htmltag =
-    '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    '<br>'
+    + '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
     + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
     + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
     + '<br> <form action="/" method="post">'
-    + '<br>パラメータ設定　※注意：ＳＱ日以外は、すべて数値で入力してください！'
+    + 'パラメータ設定　※注意：ＳＱ日以外は、すべて数値で入力してください！'
     
     + '<br>ＳＱ日０ : ' 
     + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[0]+'">'

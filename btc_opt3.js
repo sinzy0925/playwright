@@ -86,7 +86,31 @@ app.get('/'+urlpath, (req, res) => {
 
   const files  = fs.readdirSync(urlpath);
   const filter = files.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
-  let pathtext ='';
+  let pathtext ='<table> <tbody>';
+
+  for(let i = 0 ; i < filter.length ; i++){
+    if(filter[i].indexOf('down') == -1){
+      if(      i == 0){
+        pathtext += '<tr><td>'+ arrDDMMYY[0] + '</td></tr><tr>';  
+      }else if(i == 3 || i == 9){
+        pathtext += '</tr><tr>';
+      }else if(i == 6 ){
+        pathtext += '</tr><tr></tr><tr><td>'+arrDDMMYY[1]+'</td></tr><tr></tr><tr>';
+      }
+
+      if(      i >=3 && i <6){
+        pathtext += '<td><a href="' + filter[i+3] + '">' + filter[i+3] + '</a></td>\n'
+      }else if(i >=6 && i <9){
+        pathtext += '<td><a href="' + filter[i-3] + '">' + filter[i-3] + '</a></td>\n'
+      }else if(i >=0 && i <3 || i >=9 && i <12){
+        pathtext += '<td><a href="' + filter[i] + '">' + filter[i] + '</a></td>\n'
+      }
+    }
+  }
+  pathtext += '</tr></tbody></table>';
+
+
+  /*
   for(let i = 0 ; i < filter.length ; i++){
     if(filter[i].indexOf('down') == -1){
       if(i > 0 ){
@@ -102,7 +126,7 @@ app.get('/'+urlpath, (req, res) => {
 
     }  
   }
-  
+*/  
 
   let htmltag = maketag(lineAlert,arrKenri,arrDDMMYY);
   
@@ -781,15 +805,15 @@ function writefile0(lineAlert,arrKenri,arrDDMMYY,req) {
   fs.writeFileSync(urlpath+"paramKenriP1.csv", kep1);
 
 
-  console.error(['DD-MM-YY',arrDDMMYY],'=>',["write paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
-  console.error(['KenriC0', arrKenri[0][0]],'       =>',["write paramKenriC0.csv", kec0])
-  console.error(['AlertC0',lineAlert[0][0]],' =>',["write paramAlertC0.csv", lac0])
-  console.error(['KenriP0', arrKenri[1][0]],'       =>',["write paramKenriP0.csv", kep0])
-  console.error(['AlertP0',lineAlert[1][0]],' =>',["write paramAlertP0.csv", lap0])
-  console.error(['KenriC1', arrKenri[0][1]],'       =>',["write paramKenriC1.csv", kec1])
-  console.error(['AlertC1',lineAlert[0][1]],' =>',["write paramAlertC1.csv", lac1])
-  console.error(['KenriP1', arrKenri[1][1]],'       =>',["write paramKenriP1.csv", kep1])
-  console.error(['AlertP1',lineAlert[1][1]],' =>',["write paramAlertP1.csv", lap1])
+  console.error(['DD-MM-YY',arrDDMMYY],'  =>',["write paramDDMMYY.csv" , arrDDMMYY[0]+','+arrDDMMYY[1]])
+  console.error(['KenriC0', arrKenri[0][0]],'         =>',["write paramKenriC0.csv", kec0])
+  console.error(['AlertC0',lineAlert[0][0]],'=>',["write paramAlertC0.csv", lac0])
+  console.error(['KenriP0', arrKenri[1][0]],'         =>',["write paramKenriP0.csv", kep0])
+  console.error(['AlertP0',lineAlert[1][0]],'=>',["write paramAlertP0.csv", lap0])
+  console.error(['KenriC1', arrKenri[0][1]],'         =>',["write paramKenriC1.csv", kec1])
+  console.error(['AlertC1',lineAlert[0][1]],'=>',["write paramAlertC1.csv", lac1])
+  console.error(['KenriP1', arrKenri[1][1]],'         =>',["write paramKenriP1.csv", kep1])
+  console.error(['AlertP1',lineAlert[1][1]],'=>',["write paramAlertP1.csv", lap1])
 
   console.error(" END writefile0(lineAlert,arrKenri,arrDDMMYY,req) ")
 
@@ -809,43 +833,43 @@ function maketag(lineAlert,arrKenri,arrDDMMYY){
     + '<br>ＳＱ日０ : ' 
     + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[0]+'">'
     + '<br>ＣＡＬＬ 権利行使価格 : '
-    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][0]+'">'
-    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][1]+'">'
-    + '<input type="text" size="2" name="kenriCd0k0" value="'+arrKenri[0][0][2]+'">'
+    + '<input type="text" size="2" name="kenriC0" value="'+arrKenri[0][0][0]+'">'
+    + '<input type="text" size="2" name="kenriC0" value="'+arrKenri[0][0][1]+'">'
+    + '<input type="text" size="2" name="kenriC0" value="'+arrKenri[0][0][2]+'">'
     + ' Alert '
-    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][0]+'">'
-    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][1]+'">'
-    + '<input type="text" size="3" name="alertCd0k0" value="'+lineAlert[0][0][2]+'">'
+    + '<input type="text" size="3" name="alertC0" value="'+lineAlert[0][0][0]+'">'
+    + '<input type="text" size="3" name="alertC0" value="'+lineAlert[0][0][1]+'">'
+    + '<input type="text" size="3" name="alertC0" value="'+lineAlert[0][0][2]+'">'
 
     + '<br>ＰＵＴ　 権利行使価格 : '
-    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][0]+'">'
-    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][1]+'">'
-    + '<input type="text" size="2" name="kenriPd0k0" value="'+arrKenri[1][0][2]+'">'
+    + '<input type="text" size="2" name="kenriP0" value="'+arrKenri[1][0][0]+'">'
+    + '<input type="text" size="2" name="kenriP0" value="'+arrKenri[1][0][1]+'">'
+    + '<input type="text" size="2" name="kenriP0" value="'+arrKenri[1][0][2]+'">'
     + ' Alert '
-    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][0]+'">'
-    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][1]+'">'
-    + '<input type="text" size="3" name="alertPd0k0" value="'+lineAlert[1][0][2]+'">'
+    + '<input type="text" size="3" name="alertP0" value="'+lineAlert[1][0][0]+'">'
+    + '<input type="text" size="3" name="alertP0" value="'+lineAlert[1][0][1]+'">'
+    + '<input type="text" size="3" name="alertP0" value="'+lineAlert[1][0][2]+'">'
 
     + '<br>ＳＱ日１ : '
     + '<input type="text" size="4" name="ddmmyy0" value="'+arrDDMMYY[1]+'">'
     + '<br>ＣＡＬＬ 権利行使価格 : '
-    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][0]+'">'
-    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][1]+'">'
-    + '<input type="text" size="2" name="kenriCd1k0" value="'+arrKenri[0][1][2]+'">'
+    + '<input type="text" size="2" name="kenriC1" value="'+arrKenri[0][1][0]+'">'
+    + '<input type="text" size="2" name="kenriC1" value="'+arrKenri[0][1][1]+'">'
+    + '<input type="text" size="2" name="kenriC1" value="'+arrKenri[0][1][2]+'">'
     + ' Alert '
-    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][0]+'">'
-    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][1]+'">'
-    + '<input type="text" size="3" name="alertCd1k0" value="'+lineAlert[0][1][2]+'">'
+    + '<input type="text" size="3" name="alertC1" value="'+lineAlert[0][1][0]+'">'
+    + '<input type="text" size="3" name="alertC1" value="'+lineAlert[0][1][1]+'">'
+    + '<input type="text" size="3" name="alertC1" value="'+lineAlert[0][1][2]+'">'
 
 
     + '<br>ＰＵＴ　 権利行使価格 : '
-    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][0]+'">'
-    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][1]+'">'
-    + '<input type="text" size="2" name="kenriPd1k0" value="'+arrKenri[1][1][2]+'">'
+    + '<input type="text" size="2" name="kenriP1" value="'+arrKenri[1][1][0]+'">'
+    + '<input type="text" size="2" name="kenriP1" value="'+arrKenri[1][1][1]+'">'
+    + '<input type="text" size="2" name="kenriP1" value="'+arrKenri[1][1][2]+'">'
     + ' Alert '
-    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][0]+'">'
-    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][1]+'">'
-    + '<input type="text" size="3" name="alertPd1k0" value="'+lineAlert[1][1][2]+'">'
+    + '<input type="text" size="3" name="alertP1" value="'+lineAlert[1][1][0]+'">'
+    + '<input type="text" size="3" name="alertP1" value="'+lineAlert[1][1][1]+'">'
+    + '<input type="text" size="3" name="alertP1" value="'+lineAlert[1][1][2]+'">'
 
     
     + '<br><input type="submit" value="送信！">'

@@ -353,10 +353,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
     if(test1 != null){
       try{
-        if(i == 0){
-          console.error(["Start async function call " + meigara]);
-          console.error("");        
-        }
+
+        //console.error([meigara,"Start async function call"+i]);
+        //console.error("");        
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 200,y: 15} });
@@ -364,9 +363,6 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_C + '000' + '-C_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['AlertC'+i,lineAlert[0][j][i]
-          ,'CntC',lineCnt.cntC00,lineCnt.cntC01,lineCnt.cntC02,lineCnt.cntC10,lineCnt.cntC11,lineCnt.cntC12]
-          ,["i:0-2 i:" + i],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt]);
 
         
         //権利行使価格
@@ -387,7 +383,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         
         //ボラティリティ
         let vola = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-        vola = vola.split('\n')[3].split('%')[0]; 
+        vola = vola.split('\n')[3].split('%')[0].split('.')[0]; 
 
         //価格
         let kakaku = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
@@ -417,12 +413,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         fs.appendFileSync( PATH , resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        //console.warn([PATH]);
-        console.error([resC]);
 
         await page.waitForTimeout(500);
 
-        //console.error('lineAlert '+lineAlert[0][j][i]) j==日
 
         let lineCount = 0;
         if(      j == 0 && i == 0){
@@ -464,6 +457,13 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
           }
         }
 
+        console.error([meigara],['AlertC'+i,lineAlert[0][j][i]
+          ,'CountC'+i,lineCount]
+          ,["i:0-2 i:",i],["j:",j],["l:",l],["cnt:",cnt]);
+
+        console.error([resC]);
+
+
 
       
 
@@ -504,10 +504,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
     if(test1 != null){
       try{
-        if(i == 0){
-          console.error(["Start async function put " + meigara]);
-          console.error("");        
-        }
+
+        //console.error([meigara,"Start async function  put"+i]);
+        //console.error("");        
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 600,y: 15} });
@@ -515,9 +514,6 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         //await page.locator('#BTC-' + BTC_P + '000' + '-P_checked div').first().click();
         //await page.waitForTimeout(1000);
   
-        console.error([meigara],['AlertP'+i,lineAlert[1][j][i]
-          ,'CntP',lineCnt.cntP00,lineCnt.cntP01,lineCnt.cntP02,lineCnt.cntP10,lineCnt.cntP11,lineCnt.cntP12]
-          ,["i:0-2 i:" + i ],["j:"+ j ],["l:"+ l ],["cnt:"+ cnt ]);
 
         
         //権利行使価格
@@ -538,7 +534,7 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         
         //ボラティリティ
         let vola = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[1]').innerText(); 
-        vola = vola.split('\n')[3].split('%')[0]; 
+        vola = vola.split('\n')[3].split('%')[0].split('.')[0]; 
 
         //価格
         let kakaku = await page.locator('//*[@id="orderContainer"]/div[2]/div[2]/div[2]/div[1]/div/div[1]').innerText(); 
@@ -568,8 +564,6 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         fs.appendFileSync( PATH, resC );
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
-        //console.warn([PATH]);
-        console.error([resC]);
 
         await page.waitForTimeout(500);
 
@@ -612,10 +606,12 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
             lineCnt.cntP12 = lineCount;
           }
         }
-    
-    
-      
 
+        console.error([meigara],['AlertP'+i,lineAlert[1][j][i]
+          ,'CountP'+i,lineCount]
+          ,["i:0-2 i:",i ],["j:",j ],["l:",l],["cnt:",cnt]);
+
+        console.error([resC]);
 
       } catch(e) {
           console.error( 'err : ' + e.message );
@@ -823,8 +819,7 @@ function maketag(lineAlert,arrKenri,arrDDMMYY){
   console.error(" Start maketag(lineAlert,arrKenri,arrDDMMYY) ")
 
   let htmltag =
-    '<br>'
-    + '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
+    '<br> <a href="zdownload.html">データ表示　：全データファイル</a>\n'
     + '<br> <a href="download">ダウンロード：全データファイル</a>\n'
     + '<br> <a href="del" >ファイル削除：全データファイル（ダウンロード後）</a>\n'
     + '<br> <form action="/" method="post">'

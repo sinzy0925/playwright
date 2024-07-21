@@ -19,7 +19,7 @@ let urlpath = 'public/';//'../Dropbox/Attachments/'
 let express = require("express");
 let app = express();
 
-let server = app.listen(8080, function(){
+let server = app.listen(8081, function(){
   console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
 //app.use('~/aaa/bbb', express.static(__dirname + '~/aaa/bbb'));
@@ -354,8 +354,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     if(test1 != null){
       try{
 
-        //console.error([meigara,"Start async function call"+i]);
-        //console.error("");        
+        console.error("");        
+        console.error([meigara,"Start async function call"+i]);
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_C + '000' + ' canvas').click({ position: {x: 200,y: 15} });
@@ -440,7 +440,12 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
                       + '\n' + ymd
                       + '\nCount:' + (lineCount+1);
           await sendline(linemsg);
-          console.error(linemsg);
+          let msg = linemsg.split('\n')
+          console.error(msg[0])
+          console.error(msg[2],msg[3],msg[4])
+          console.error(msg[5],msg[6])
+          console.error(msg[7],msg[8])
+          
           lineCount++;
           if(      j == 0 && i ==0){
             lineCnt.cntC00 = lineCount;
@@ -457,11 +462,13 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
           }
         }
 
-        console.error([meigara],['AlertC'+i,lineAlert[0][j][i]
-          ,'CountC'+i,lineCount]
+        console.error([meigara],['AlertC'+i],lineAlert[0][j][i]
+          ,['CountC'+i,lineCount]
           ,["i:0-2 i:",i],["j:",j],["l:",l],["cnt:",cnt]);
 
-        console.error([resC]);
+        let resC1 = resC.split(',')
+        console.error([resC1[7]],[resC1[0]],resC1[2],[resC1[4]],[resC1[5]],[resC1[6]],[resC1[9]],[resC1[10]]);
+
 
 
 
@@ -505,8 +512,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
     if(test1 != null){
       try{
 
-        //console.error([meigara,"Start async function  put"+i]);
-        //console.error("");        
+        console.error("");        
+        console.error([meigara,"Start async function  put"+i]);
       
         await page.waitForTimeout(500);
         await page.locator('#BTC-' + BTC_P + '000' + ' canvas').click({ position: {x: 600,y: 15} });
@@ -590,8 +597,14 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
                       + '\n' + ymd
                       + '\nCount:' + (lineCount+1);
           await sendline(linemsg);
-          console.error(linemsg);
+          let msg = linemsg.split('\n')
+          console.error(msg[0])
+          console.error(msg[2],msg[3],msg[4])
+          console.error(msg[5],msg[6])
+          console.error(msg[7],msg[8])
+          
           lineCount++;
+          
           if(      j == 0 && i ==0){
             lineCnt.cntP00 = lineCount;
           }else if(j == 0 && i ==1){
@@ -607,12 +620,13 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
           }
         }
 
-        console.error([meigara],['AlertP'+i,lineAlert[1][j][i]
-          ,'CountP'+i,lineCount]
+        console.error([meigara],['AlertP'+i],lineAlert[1][j][i]
+          ,['CountP'+i,lineCount]
           ,["i:0-2 i:",i ],["j:",j ],["l:",l],["cnt:",cnt]);
 
-        console.error([resC]);
-
+        let resC1 = resC.split(',')
+        console.error([resC1[7]],[resC1[0]],resC1[2],[resC1[4]],[resC1[5]],[resC1[6]],[resC1[9]],[resC1[10]]);
+  
       } catch(e) {
           console.error( 'err : ' + e.message );
       }

@@ -19,7 +19,7 @@ let urlpath = 'public/';//'../Dropbox/Attachments/'
 let express = require("express");
 let app = express();
 
-let server = app.listen(8081, function(){
+let server = app.listen(8080, function(){
   console.error(["Node.js is listening to localhost:" + server.address().port + '/' + urlpath]);
 });
 //app.use('~/aaa/bbb', express.static(__dirname + '~/aaa/bbb'));
@@ -85,9 +85,36 @@ app.get('/'+urlpath, (req, res) => {
   console.error("Start app.get()")
 
   const files  = fs.readdirSync(urlpath);
-  const filter = files.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
+  let filter = files.filter(RegExp.prototype.test, /.*\.html$/); // ファイル名一覧から、拡張子で抽出
+
+  filter = filter.slice(0,-1)
+  console.log(filter)
+
   let pathtext ='<table> <tbody>';
 
+  pathtext += '<tr><td>'+ arrDDMMYY[0] + '</td></tr>\n'
+  pathtext += '<tr>\n';  
+  pathtext += '<td><a href="' + filter[0] + '">' + filter[0] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[1] + '">' + filter[1] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[2] + '">' + filter[2] + '</a></td>\n'
+  pathtext += '</tr>\n'
+  pathtext += '<tr>\n';
+  pathtext += '<td><a href="' + filter[8] + '">' + filter[8] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[7] + '">' + filter[7] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[6] + '">' + filter[6] + '</a></td>\n'
+  pathtext += '</tr>\n'
+  pathtext += '<tr></tr><tr><td>'+arrDDMMYY[1]+'</td></tr><tr></tr>\n'
+  pathtext += '<tr>\n';
+  pathtext += '<td><a href="' + filter[3] + '">' + filter[3] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[4] + '">' + filter[4] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[5] + '">' + filter[5] + '</a></td>\n'
+  pathtext += '</tr>\n'
+  pathtext += '<tr>\n';
+  pathtext += '<td><a href="' + filter[11] + '">' + filter[11] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[10] + '">' + filter[10] + '</a></td>\n'
+  pathtext += '<td><a href="' + filter[9] + '">' + filter[9] + '</a></td>\n'
+  pathtext += '</tr>\n'
+/*
   for(let i = 0 ; i < filter.length ; i++){
     if(filter[i].indexOf('down') == -1){
       if(      i == 0){
@@ -107,7 +134,9 @@ app.get('/'+urlpath, (req, res) => {
       }
     }
   }
-  pathtext += '</tr></tbody></table>';
+*/
+  pathtext += '</tbody></table>';
+  console.log(pathtext)
 
 
   /*
@@ -411,8 +440,10 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
              + meigara  +  ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
-        fs.appendFileSync( urlpath + 'zdownload.html', resC );
+        let sorted = sortFunc(PATH);
+        fs.writeFileSync(PATH, sorted,{flag: "w"}); 
 
+        fs.appendFileSync( urlpath + 'zdownload.html', resC );
 
         await page.waitForTimeout(500);
 
@@ -569,7 +600,15 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
              + meigara + ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
         
         fs.appendFileSync( PATH, resC );
+        let sorted = sortFunc(PATH);
+        fs.writeFileSync(PATH, sorted,{flag: "w"}); 
+
         fs.appendFileSync( urlpath + 'zdownload.html', resC );
+        if(i == 2){
+          let sorted1 = sortFunc(urlpath + 'zdownload.html');
+          //console.log(sorted1)
+          fs.writeFileSync(urlpath + 'zdownload.html', sorted1,{flag: "w"});   
+        }
 
 
         await page.waitForTimeout(500);
@@ -637,6 +676,8 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
 
 }//async function callput(page,dd,mm,yy){
+
+
 
 async function sendline(linemsg) {
   //LINE Messaging APIを使って、LINE Botから定型文を送信する
@@ -899,4 +940,29 @@ function maketag(lineAlert,arrKenri,arrDDMMYY){
     console.error(" END maketag(lineAlert,arrKenri,arrDDMMYY) ")
   
     return htmltag;
+}
+
+function sortFunc(PATH){
+  //sort 参考資料
+  //https://zenn.dev/tk4/articles/0dcfdd76b862202b217c
+
+  let txt = fs.readFileSync(PATH);
+  let txt1 = txt.toString().split('\n').slice(0,-1)
+  let txt2 = '';
+  for(let ii = 0; ii < txt1.length ; ii++){
+      let a = new Date(txt1[ii].split(',')[9]);
+      let aa = a.getTime()
+      txt2 += aa + ',' + txt1[ii] + '\n';
+  }
+  let txt3 = txt2.split('\n').slice(0,-1)
+  let txt4 = txt3.sort((a,b) => (a > b ? -1 : 1))
+
+  let txt5 = ''
+  for(let ii = 0 ; ii < txt4.length ; ii++){
+    txt5 += txt4[ii].split(',').slice(1).toString()+'\n'
+  }
+
+
+  return txt5;
+
 }

@@ -58,10 +58,11 @@ arrDDMMYY[0] = '26-07-24';
 arrDDMMYY[1] = '02-08-24';
 
 let cnt = -1;
-let lineCnt = {cntC00:0 ,cntC01:0 ,cntC02:0 
-              ,cntC10:0 ,cntC11:0 ,cntC12:0 
-              ,cntP00:0 ,cntP01:0 ,cntP02:0 
-              ,cntP10:0 ,cntP11:0 ,cntP12:0};
+let lineCnt = {cntC00:0 ,cntC01:0 ,cntC02:0 ,cntC03:0 ,cntC04:0 
+              ,cntC10:0 ,cntC11:0 ,cntC12:0 ,cntC13:0 ,cntC14:0 
+              ,cntP00:0 ,cntP01:0 ,cntP02:0 ,cntP03:0 ,cntP04:0 
+              ,cntP10:0 ,cntP11:0 ,cntP12:0 ,cntP13:0 ,cntP14:0
+            };
 //console.error(lineCnt)
 
 
@@ -476,12 +477,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
           lineCount = lineCnt.cntC01
         }else if(j == 0 && i == 2){
           lineCount = lineCnt.cntC02
+        }else if(j == 0 && i == 3){
+          lineCount = lineCnt.cntC03
+        }else if(j == 0 && i == 4){
+          lineCount = lineCnt.cntC04
         }else if(j == 1 && i == 0){
           lineCount = lineCnt.cntC10
         }else if(j == 1 && i == 1){
           lineCount = lineCnt.cntC11
         }else if(j == 1 && i == 2){
           lineCount = lineCnt.cntC12
+        }else if(j == 1 && i == 3){
+          lineCount = lineCnt.cntC13
+        }else if(j == 1 && i == 4){
+          lineCount = lineCnt.cntC14
         }
     
         if(sell > lineAlert[0][j][i] && lineCount < 5){
@@ -505,12 +514,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
             lineCnt.cntC01 = lineCount;
           }else if(j == 0 && i ==2){
             lineCnt.cntC02 = lineCount;
+          }else if(j == 0 && i ==3){
+            lineCnt.cntC03 = lineCount;
+          }else if(j == 0 && i ==4){
+            lineCnt.cntC04 = lineCount;
           }else if(j == 1 && i ==0){
             lineCnt.cntC10 = lineCount;
           }else if(j == 1 && i ==1){
             lineCnt.cntC11 = lineCount;
           }else if(j == 1 && i ==2){
             lineCnt.cntC12 = lineCount;
+          }else if(j == 1 && i ==3){
+            lineCnt.cntC13 = lineCount;
+          }else if(j == 1 && i ==4){
+            lineCnt.cntC14 = lineCount;
           }
         }
 
@@ -642,12 +659,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
           lineCount = lineCnt.cntP01
         }else if(j == 0 && i == 2){
           lineCount = lineCnt.cntP02
+        }else if(j == 0 && i == 3){
+          lineCount = lineCnt.cntP03
+        }else if(j == 0 && i == 4){
+          lineCount = lineCnt.cntP04
         }else if(j == 1 && i == 0){
           lineCount = lineCnt.cntP10
         }else if(j == 1 && i == 1){
           lineCount = lineCnt.cntP11
         }else if(j == 1 && i == 2){
           lineCount = lineCnt.cntP12
+        }else if(j == 1 && i == 3){
+          lineCount = lineCnt.cntP13
+        }else if(j == 1 && i == 4){
+          lineCount = lineCnt.cntP14
         }
 
         if(sell > lineAlert[1][j][i] && lineCount < 5){
@@ -672,12 +697,20 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
             lineCnt.cntP01 = lineCount;
           }else if(j == 0 && i ==2){
             lineCnt.cntP02 = lineCount;
+          }else if(j == 0 && i ==3){
+            lineCnt.cntP03 = lineCount;
+          }else if(j == 0 && i ==4){
+            lineCnt.cntP04 = lineCount;
           }else if(j == 1 && i ==0){
             lineCnt.cntP10 = lineCount;
           }else if(j == 1 && i ==1){
             lineCnt.cntP11 = lineCount;
           }else if(j == 1 && i ==2){
             lineCnt.cntP12 = lineCount;
+          }else if(j == 1 && i ==3){
+            lineCnt.cntP13 = lineCount;
+          }else if(j == 1 && i ==4){
+            lineCnt.cntP14 = lineCount;
           }
         }
 

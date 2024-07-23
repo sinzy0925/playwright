@@ -215,7 +215,11 @@ for(let loop = 0 ; loop < 2 ; loop++){
 
   let res_text = "";
 
-
+  arrResult = readfile0();
+  lineAlert = arrResult[0];
+  arrKenri  = arrResult[1];
+  arrDDMMYY = arrResult[2];
+  
 
   console.error(["page.goto() Start"]);
   await page.goto('https://www.bybit.com/trade/option/usdc/BTC');
@@ -436,8 +440,9 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         nokori = nokori.split('min')[0];     
 
         let resC = "";
-        resC = genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola +',' 
-             + meigara  +  ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
+        resC = ymd + ',' + nokori + ',<br>,' 
+             + genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola +',' 
+             + meigara  +  ',<br>\n'; 
         
         fs.appendFileSync( PATH , resC );
         let sorted = sortFunc(PATH);
@@ -495,10 +500,10 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
         console.error([meigara],['AlertC'+i],lineAlert[0][j][i]
           ,['CountC'+i,lineCount]
-          ,["i:0-2 i:",i],["j:",j],["l:",l],["cnt:",cnt]);
+          ,["j[0-1] j",j],["i[0-2] i",i],["l[0-4] l",l],["cnt:",cnt]);
 
         let resC1 = resC.split(',')
-        console.error([resC1[7]],[resC1[0]],resC1[2],[resC1[4]],[resC1[5]],[resC1[6]],[resC1[9]],[resC1[10]]);
+        console.error([resC1[10]],[resC1[3]],resC1[5],[resC1[7]],[resC1[8]],[resC1[9]],[resC1[0]],[resC1[1]]);
 
 
 
@@ -596,9 +601,10 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
         nokori = nokori.split('min')[0] ;     
 
         let resC = "";
-        resC = genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola + ',' 
-             + meigara + ',<br>,' + ymd + ',' + nokori + ',<br>\n'; 
-        
+        resC = ymd + ',' + nokori + ',<br>,' 
+             + genshi +',<font color="red">[,'+ sell +',]</font>,'+ mark +','+ buy +','+ vola +',' 
+             + meigara  +  ',<br>\n'; 
+
         fs.appendFileSync( PATH, resC );
         let sorted = sortFunc(PATH);
         fs.writeFileSync(PATH, sorted,{flag: "w"}); 
@@ -661,10 +667,10 @@ async function callput(page,dd,mm,yy,j,arrDDMMYY,l,cnt,lineCnt,lineAlert,arrKenr
 
         console.error([meigara],['AlertP'+i],lineAlert[1][j][i]
           ,['CountP'+i,lineCount]
-          ,["i:0-2 i:",i ],["j:",j ],["l:",l],["cnt:",cnt]);
+          ,["j[0-1] j",j],["i[0-2] i",i],["l[0-4] l",l],["cnt:",cnt]);
 
         let resC1 = resC.split(',')
-        console.error([resC1[7]],[resC1[0]],resC1[2],[resC1[4]],[resC1[5]],[resC1[6]],[resC1[9]],[resC1[10]]);
+        console.error([resC1[10]],[resC1[3]],resC1[5],[resC1[7]],[resC1[8]],[resC1[9]],[resC1[0]],[resC1[1]]);
   
       } catch(e) {
           console.error( 'err : ' + e.message );
@@ -948,21 +954,13 @@ function sortFunc(PATH){
 
   let txt = fs.readFileSync(PATH);
   let txt1 = txt.toString().split('\n').slice(0,-1)
-  let txt2 = '';
-  for(let ii = 0; ii < txt1.length ; ii++){
-      let a = new Date(txt1[ii].split(',')[9]);
-      let aa = a.getTime()
-      txt2 += aa + ',' + txt1[ii] + '\n';
+  let txt2 = txt1.sort((a,b) => (a > b ? -1 : 1))
+  let txt3 = ''
+  for(let ii = 0 ; ii < txt2.length ; ii++){
+    txt3 += txt2[ii].split(',').toString()+'\n'
   }
-  let txt3 = txt2.split('\n').slice(0,-1)
-  let txt4 = txt3.sort((a,b) => (a > b ? -1 : 1))
-
-  let txt5 = ''
-  for(let ii = 0 ; ii < txt4.length ; ii++){
-    txt5 += txt4[ii].split(',').slice(1).toString()+'\n'
-  }
-
-
-  return txt5;
-
+  //console.log(txt3)
+  
+  return txt3;
+  
 }
